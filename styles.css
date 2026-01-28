@@ -1,0 +1,850 @@
+/* styles.css (substitua o arquivo inteiro por este)
+   Paleta extraída/ajustada a partir dos prints do clinicexperts.com.br/page-5
+   Base: cinza quente (#ebeae8) + aurora verde/teal (#ddeddd / #a8decc) + lilás suave (#9f95e1 / #bacae7)
+*/
+
+:root {
+    /* Base do site (prints) */
+    --bg-base: #ebeae8;
+    /* fundo principal (warm gray) */
+    --bg-soft: #f4f4f1;
+    /* variação clara */
+    --bg-card: #ffffff;
+    /* branco */
+    --stroke: #e6e3de;
+    /* borda quente */
+    --stroke-2: #dedad4;
+
+    /* Texto */
+    --text: #1a1a1a;
+    --muted: #6e6e6e;
+
+    /* Acentos (prints mostram verdes/teal e lilás suaves) */
+    --teal-1: #ddeddd;
+    --teal-2: #c8e8d7;
+    --teal-3: #a8decc;
+
+    --lav-1: #bacae7;
+    --lav-2: #9f95e1;
+
+    /* Estados */
+    --black: #111111;
+    --danger: #ef4444;
+    --success: #16a34a;
+
+    --danger-soft: #ffe7ea;
+    --success-soft: rgba(221, 237, 221, .70);
+    /* mint suave */
+    --warn-soft: #fff3e2;
+
+    /* Sombra mais “Framer-like” */
+    --shadow: 0 18px 50px rgba(17, 24, 39, .08);
+
+    --radius: 22px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+    color: var(--text);
+    background: var(--bg-base);
+}
+
+/* Aurora/gradiente como o site (verde/teal + toque lilás) */
+.app {
+    min-height: 100vh;
+    position: relative;
+    isolation: isolate;
+}
+
+.app::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+
+    /* base warm + “aurora” à direita */
+    background:
+        radial-gradient(900px 520px at 78% 16%, rgba(168, 222, 204, .55) 0%, rgba(168, 222, 204, 0) 62%),
+        radial-gradient(820px 520px at 92% 30%, rgba(221, 237, 221, .60) 0%, rgba(221, 237, 221, 0) 62%),
+        radial-gradient(640px 420px at 72% 44%, rgba(186, 202, 231, .35) 0%, rgba(186, 202, 231, 0) 64%),
+        radial-gradient(520px 340px at 60% 36%, rgba(159, 149, 225, .22) 0%, rgba(159, 149, 225, 0) 66%),
+        radial-gradient(1200px 700px at 10% 10%, rgba(244, 244, 241, .95) 0%, rgba(244, 244, 241, 0) 62%);
+
+    filter: blur(18px);
+    opacity: .95;
+}
+
+/* VIEWS */
+.view {
+    display: none;
+}
+
+.view.is-active {
+    display: block;
+}
+
+/* LAYOUT */
+.page {
+    min-height: 100vh;
+    padding: 48px 18px 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.page--hero {
+    padding-top: 64px;
+}
+
+/* HERO */
+.hero {
+    width: min(920px, 100%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(230, 227, 222, .85);
+    background: rgba(255, 255, 255, .55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.pill__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    border: 2px solid currentColor;
+}
+
+.pill--danger {
+    color: var(--danger);
+    border-color: rgba(239, 68, 68, .22);
+    background: rgba(255, 231, 234, .55);
+}
+
+.hero__title {
+    margin: 0;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-weight: 850;
+}
+
+.hero__subtitle {
+    margin: 0;
+    font-size: clamp(18px, 2vw, 26px);
+    color: var(--muted);
+}
+
+.hero__desc {
+    margin: 8px 0 0;
+    max-width: 640px;
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+.hero__desc strong {
+    color: var(--text);
+}
+
+/* STATS */
+.hero__stats {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    width: min(520px, 100%);
+}
+
+.stat {
+    background: rgba(255, 255, 255, .58);
+    border: 1px solid rgba(230, 227, 222, .85);
+    border-radius: 16px;
+    padding: 14px 14px 12px;
+    box-shadow: 0 16px 40px rgba(17, 24, 39, .06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.stat__value {
+    font-weight: 850;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat__icon {
+    font-size: 16px;
+    opacity: .9;
+}
+
+.stat__label {
+    margin-top: 6px;
+    font-size: 12px;
+    color: rgba(26, 26, 26, .60);
+}
+
+/* BUTTONS */
+.btn {
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 18px;
+    font-weight: 750;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    user-select: none;
+}
+
+.btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn--xl {
+    padding: 16px 22px;
+    min-width: 320px;
+}
+
+.btn--primary {
+    background: var(--black);
+    color: #fff;
+    box-shadow: 0 18px 46px rgba(17, 24, 39, .16);
+}
+
+.btn--danger {
+    background: var(--danger);
+    color: #fff;
+    box-shadow: 0 18px 46px rgba(239, 68, 68, .22);
+}
+
+.btn--success {
+    background: var(--success);
+    color: #fff;
+    box-shadow: 0 18px 46px rgba(22, 163, 74, .20);
+}
+
+.btn--outline {
+    background: rgba(255, 255, 255, .35);
+    border: 1px solid rgba(26, 26, 26, .20);
+    color: var(--text);
+    min-width: 220px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.btn--link {
+    background: transparent;
+    color: var(--text);
+    padding: 12px 10px;
+    font-weight: 650;
+}
+
+.btn__arrow {
+    font-weight: 900;
+}
+
+.hero__fineprint {
+    margin-top: -4px;
+    font-size: 12px;
+    color: rgba(26, 26, 26, .55);
+}
+
+/* BRAND */
+.brand {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    opacity: .95;
+}
+
+.brand__mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: var(--black);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 13px;
+}
+
+.brand__text {
+    font-weight: 750;
+    letter-spacing: -0.02em;
+}
+
+.brand__accent {
+    color: var(--text);
+    opacity: .85;
+}
+
+.brand--footer {
+    margin-top: 10px;
+    opacity: .9;
+}
+
+/* STEPPER */
+.stepper-wrap {
+    width: min(720px, 100%);
+    display: flex;
+    justify-content: center;
+}
+
+.stepper {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+
+
+.step__circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 850;
+    font-size: 13px;
+    border: 1px solid rgba(26, 26, 26, .10);
+    background: rgba(255, 255, 255, .35);
+    color: rgba(26, 26, 26, .55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.step.is-current .step__circle {
+    background: var(--black);
+    color: #fff;
+    border-color: rgba(17, 24, 39, .25);
+}
+
+.step.is-complete .step__circle {
+    background: rgba(22, 163, 74, 1);
+    color: #fff;
+    border-color: rgba(22, 163, 74, 1);
+}
+
+/* CARD */
+.card {
+    width: min(720px, 100%);
+    background: rgba(255, 255, 255, .58);
+    border: 1px solid rgba(230, 227, 222, .90);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 34px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.card--narrow {
+    width: min(520px, 100%);
+}
+
+.card__tag {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 850;
+    letter-spacing: .10em;
+    margin-bottom: 10px;
+    color: rgba(22, 163, 74, .95);
+}
+
+.card__title {
+    margin: 0;
+    text-align: center;
+    font-size: 36px;
+    letter-spacing: -0.02em;
+}
+
+.card__subtitle {
+    margin: 8px 0 22px;
+    text-align: center;
+    color: rgba(26, 26, 26, .55);
+}
+
+/* FIELDS */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.field__label {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.35;
+}
+
+.input {
+    width: 100%;
+    height: 56px;
+    border-radius: 14px;
+    border: 1px solid rgba(230, 227, 222, .95);
+    background: rgba(255, 255, 255, .40);
+    padding: 0 16px;
+    outline: none;
+    font-size: 15px;
+    font-weight: 650;
+    color: var(--text);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.input:focus {
+    border-color: rgba(26, 26, 26, .18);
+    box-shadow: 0 0 0 4px rgba(26, 26, 26, .05);
+    background: rgba(255, 255, 255, .55);
+}
+
+.money {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 56px;
+    border-radius: 14px;
+    border: 1px solid rgba(230, 227, 222, .95);
+    background: rgba(255, 255, 255, .40);
+    padding: 0 16px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.money__prefix {
+    font-weight: 850;
+    color: rgba(26, 26, 26, .55);
+}
+
+.input--money {
+    border: 0;
+    background: transparent;
+    box-shadow: none !important;
+    padding: 0;
+    height: 40px;
+}
+
+/* CALLOUTS */
+.callout {
+    margin-top: 18px;
+    border-radius: 16px;
+    padding: 14px 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border: 1px solid rgba(230, 227, 222, .90);
+}
+
+.callout__icon {
+    width: 22px;
+    text-align: center;
+}
+
+.callout__content {
+    color: rgba(26, 26, 26, .68);
+    line-height: 1.5;
+    font-size: 13px;
+}
+
+.callout__content strong {
+    color: rgba(26, 26, 26, .90);
+}
+
+.callout--success {
+    background: var(--success-soft);
+    border-color: rgba(168, 222, 204, .60);
+}
+
+.callout--warn {
+    background: rgba(255, 243, 226, .85);
+    border-color: rgba(245, 158, 11, .25);
+}
+
+.callout--danger {
+    background: rgba(255, 231, 234, .70);
+    border-color: rgba(239, 68, 68, .25);
+}
+
+.divider {
+    margin: 22px 0;
+    height: 1px;
+    width: 100%;
+    background: rgba(230, 227, 222, .95);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.fineprint {
+    margin-top: 12px;
+    font-size: 12px;
+    color: rgba(26, 26, 26, .55);
+}
+
+/* RESULT PAGE */
+.page--result {
+    padding-top: 56px;
+    justify-content: flex-start;
+}
+
+/* halo/realce do resultado (vermelho suave, como seu print) */
+.page--result::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(700px 320px at 50% 170px, rgba(239, 68, 68, .14) 0%, rgba(239, 68, 68, 0) 70%),
+        radial-gradient(520px 360px at 70% 260px, rgba(186, 202, 231, .16) 0%, rgba(186, 202, 231, 0) 70%),
+        radial-gradient(620px 420px at 80% 220px, rgba(168, 222, 204, .18) 0%, rgba(168, 222, 204, 0) 70%);
+    filter: blur(10px);
+    z-index: -1;
+}
+
+.result__kicker {
+    margin: 10px 0 0;
+    color: rgba(26, 26, 26, .55);
+    font-size: 13px;
+    text-align: center;
+}
+
+.result__value {
+    text-align: center;
+    margin-top: 6px;
+}
+
+.result__money {
+    font-weight: 900;
+    font-size: clamp(56px, 6vw, 78px);
+    letter-spacing: -0.03em;
+}
+
+.result__per {
+    margin-top: 6px;
+    font-size: 12px;
+    color: rgba(26, 26, 26, .55);
+}
+
+.resultCard {
+    width: min(640px, 100%);
+    background: rgba(255, 255, 255, .58);
+    border: 1px solid rgba(230, 227, 222, .90);
+    border-radius: 16px;
+    box-shadow: 0 16px 46px rgba(17, 24, 39, .06);
+    padding: 18px;
+    margin-top: 18px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.resultCard__top {
+    text-align: center;
+    font-size: 13px;
+    color: rgba(26, 26, 26, .70);
+}
+
+.resultCard__grid {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.mini {
+    background: rgba(255, 255, 255, .40);
+    border: 1px solid rgba(230, 227, 222, .90);
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.mini__label {
+    font-size: 11px;
+    color: rgba(26, 26, 26, .55);
+}
+
+.mini__big {
+    margin-top: 8px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    font-size: 18px;
+}
+
+.mini__sub {
+    margin-top: 4px;
+    font-size: 11px;
+    color: rgba(26, 26, 26, .50);
+}
+
+.block {
+    width: min(640px, 100%);
+    border-radius: 16px;
+    padding: 18px;
+}
+
+.block--dark {
+    margin-top: 14px;
+    background: rgba(17, 24, 39, .90);
+    color: rgba(255, 255, 255, .92);
+    border: 1px solid rgba(17, 24, 39, .28);
+}
+
+.block--green {
+    margin-top: 12px;
+    background: rgba(221, 237, 221, .62);
+    border: 1px solid rgba(168, 222, 204, .55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.block__title {
+    font-weight: 900;
+    margin-bottom: 10px;
+}
+
+.block__text {
+    font-size: 12px;
+    line-height: 1.55;
+    color: inherit;
+    opacity: .95;
+}
+
+.block__big {
+    margin-top: 14px;
+    font-size: 34px;
+    font-weight: 950;
+    letter-spacing: -0.02em;
+    text-align: center;
+}
+
+.block__sub {
+    text-align: center;
+    font-size: 12px;
+    color: rgba(26, 26, 26, .55);
+    margin-top: 4px;
+}
+
+.bullets {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 11px;
+    color: rgba(26, 26, 26, .70);
+}
+
+.result__fine {
+    margin-top: 10px;
+    font-size: 11px;
+    color: rgba(26, 26, 26, .55);
+}
+
+.t-danger {
+    color: var(--danger);
+}
+
+.t-success {
+    color: var(--success);
+}
+
+@media (max-width: 720px) {
+    .card {
+        padding: 28px 18px;
+    }
+
+    .resultCard__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .btn--xl {
+        min-width: 100%;
+    }
+}
+
+/* ========= BRAND OVERRIDES (cole no FINAL do styles.css) ========= */
+
+/* Acentos do site (pastel lilás + teal) */
+:root {
+    --accent: #7e6cf4;
+    /* lilás */
+    --accent-2: #a8decc;
+    /* teal/mint */
+    --accent-soft: rgba(159, 149, 225, .14);
+    --accent-2-soft: rgba(168, 222, 204, .18);
+
+    /* “Perda” menos agressiva (rose suave) */
+    --loss: #e11d48;
+}
+
+/* 1) Título do topo: nada de vermelho vivo */
+.hero__title .t-danger {
+    color: var(--accent) !important;
+}
+
+.hero__stats .t-loss {
+    color: var(--loss) !important;
+}
+
+/* 2) Pill do topo (Diagnóstico Financeiro Gratuito) em lilás */
+.pill--danger {
+    color: var(--accent) !important;
+    border-color: rgba(159, 149, 225, .28) !important;
+    background: rgba(159, 149, 225, .10) !important;
+}
+
+/* 3) Botão “Ver Meu Diagnóstico” e elementos que estavam vermelhos viram “brand gradient” */
+.btn--danger {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%) !important;
+    color: #111 !important;
+    box-shadow: 0 18px 46px rgba(17, 24, 39, .12) !important;
+}
+
+/* 4) Callout “danger” vira brand (sem cara de erro) */
+.callout--danger {
+    background: linear-gradient(135deg, rgba(159, 149, 225, .12) 0%, rgba(168, 222, 204, .14) 100%) !important;
+    border-color: rgba(159, 149, 225, .25) !important;
+}
+
+/* 5) Deixar os cards menos “cinza morto” (mais vivo e parecido com o site) */
+.card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, .72) 0%, rgba(255, 255, 255, .52) 100%) !important;
+    border-color: rgba(230, 227, 222, .95) !important;
+    box-shadow:
+        0 18px 50px rgba(17, 24, 39, .08),
+        0 0 0 1px rgba(255, 255, 255, .35) inset !important;
+}
+
+/* glow suave por trás do card (aurora pastel) */
+.card {
+    position: relative;
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    inset: -18px;
+    border-radius: calc(var(--radius) + 18px);
+    background:
+        radial-gradient(420px 220px at 25% 20%, var(--accent-soft) 0%, rgba(0, 0, 0, 0) 65%),
+        radial-gradient(420px 220px at 75% 30%, var(--accent-2-soft) 0%, rgba(0, 0, 0, 0) 65%);
+    filter: blur(10px);
+    opacity: .9;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* 6) Inputs com foco na paleta (em vez de cinza) */
+.input:focus {
+    border-color: rgba(159, 149, 225, .35) !important;
+    box-shadow: 0 0 0 4px rgba(159, 149, 225, .10) !important;
+}
+
+/* 7) RESULTADO: se você quiser “perda” em tom suave (sem vermelho gritante) */
+#resultAnnualLoss,
+#resultWeeklyLoss,
+#leadAnnualLoss {
+    color: rgba(225, 29, 72, .82) !important;
+    /* rose suave */
+}
+
+/* 8) Halo do resultado menos vermelho e mais “aurora” */
+.page--result::before {
+    background:
+        radial-gradient(740px 340px at 50% 170px, rgba(159, 149, 225, .18) 0%, rgba(159, 149, 225, 0) 70%),
+        radial-gradient(640px 420px at 80% 220px, rgba(168, 222, 204, .20) 0%, rgba(168, 222, 204, 0) 70%) !important;
+}
+
+/* Lead multi-step (sub-etapas no step 4) */
+.leadStep {
+    display: none;
+}
+
+.leadStep.is-active {
+    display: block;
+}
+
+.leadTitle {
+    font-size: 26px;
+    font-weight: 850;
+    letter-spacing: -0.02em;
+    margin: 6px 0 14px;
+    color: var(--text);
+}
+
+.radioRow {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.radioPill {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 56px;
+    border-radius: 14px;
+    border: 1px solid rgba(230, 227, 222, .95);
+    background: rgba(255, 255, 255, .40);
+    cursor: pointer;
+    font-weight: 700;
+    color: rgba(26, 26, 26, .75);
+    user-select: none;
+}
+
+.radioPill input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--black);
+}
