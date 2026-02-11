@@ -22,8 +22,8 @@
 
     --page-max: 1240px;
 
-    --field-border: rgba(29, 29, 29, .38);
-    --field-border-focus: rgba(29, 29, 29, .55);
+    --field-border: rgba(29, 29, 29, .26);
+    --field-border-focus: rgba(29, 29, 29, .58);
 
 }
 
@@ -177,7 +177,7 @@ body {
 /* Buttons */
 .btn {
     border: 0;
-    border-radius: 18px;
+    border-radius: 10px;
     padding: 14px 18px;
     font-weight: 750;
     cursor: pointer;
@@ -432,10 +432,9 @@ body {
 
 /* Stepper */
 .stepper-wrap {
-    width: min(720px, 100%);
-    display: flex;
+    width: 100%;
+    margin-bottom: 0;
     justify-content: center;
-    margin-bottom: 14px;
 }
 
 .stepper {
@@ -447,6 +446,11 @@ body {
     justify-content: center;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+.modalHeader__spacer {
+    width: 44px;
+    height: 44px;
 }
 
 .step__circle {
@@ -498,6 +502,7 @@ body {
     text-align: center;
     font-size: 34px;
     letter-spacing: -0.02em;
+    font-weight: 500;
 }
 
 .card__subtitle {
@@ -511,7 +516,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 16px;
+    margin-top: 32px;
 }
 
 .field__label {
@@ -541,8 +546,7 @@ body {
 
 .input:focus {
     border-color: var(--field-border-focus);
-
-    box-shadow: 0 0 0 4px rgba(179, 157, 237, .16);
+    box-shadow: none;
 }
 
 
@@ -563,8 +567,7 @@ body {
 
 .select:focus {
     border-color: var(--field-border-focus);
-
-    box-shadow: 0 0 0 4px rgba(179, 157, 237, .16);
+    box-shadow: none;
 }
 
 
@@ -611,7 +614,7 @@ body {
 
 .customSelect__button:focus {
     border-color: var(--field-border-focus);
-    box-shadow: 0 0 0 4px rgba(179, 157, 237, .16);
+    box-shadow: none;
 }
 
 .customSelect__menu {
@@ -779,7 +782,9 @@ select.select {
 }
 
 .modalHeader {
-    display: flex;
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    /* logo | stepper | spacer */
     align-items: center;
     gap: 12px;
 }
@@ -816,10 +821,10 @@ select.select {
 }
 
 .leadTitle {
-    margin: 18px 0 10px;
+    margin: 36px 0 10px;
     font-size: 30px;
     line-height: 1.1;
-    font-weight: 850;
+    font-weight: 600;
     letter-spacing: -0.02em;
 }
 
@@ -1038,5 +1043,213 @@ select.select {
 
     .heroCtas {
         gap: 10px;
+    }
+}
+
+/* ===== Reduz negritos gerais do formulário ===== */
+
+/* labels */
+.field__label {
+    font-weight: 500;
+    /* antes 650 */
+}
+
+/* texto dentro dos campos */
+.input,
+.select {
+    font-weight: 500;
+    /* antes 600 */
+}
+
+/* custom select */
+.customSelect__button {
+    font-weight: 500;
+    /* antes 600 */
+}
+
+.customSelect__option {
+    font-weight: 500;
+    /* antes 600 */
+}
+
+/* placeholder do custom select (mantém leve) */
+.customSelect__button[data-has-value="0"] {
+    font-weight: 400;
+    /* antes 600 */
+}
+
+/* (opcional) título e tag do card, para tirar “tudo em bold” */
+.card__title {
+    font-weight: 500;
+    /* se quiser ainda mais normal, use 500 */
+}
+
+.card__tag {
+    font-weight: 700;
+    /* antes 850 */
+}
+
+/* (opcional) prefixo do money */
+.money__prefix {
+    font-weight: 600;
+    /* antes 800 */
+}
+
+/* (opcional) textos auxiliares */
+.callout__content {
+    font-weight: 500;
+    /* antes 600 */
+}
+
+
+/* =========================================
+   RESPONSIVE (Mobile-first refinements)
+   Cole no FINAL do styles.css
+========================================= */
+
+/* Evita zoom bizarro em iOS quando font-size < 16 */
+input,
+select,
+button {
+    font-size: 16px;
+}
+
+/* Modal: garante que em telas baixas o card não "some" */
+.modalOverlay {
+    padding: 16px;
+    align-items: center;
+}
+
+.modalCard {
+    width: min(560px, 100%);
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Ações sempre com bom espaçamento */
+.actions {
+    gap: 12px;
+}
+
+/* Tablets e telas menores */
+@media (max-width: 860px) {
+
+    .page--hero,
+    .page--result {
+        padding-top: 28px;
+    }
+
+    .heroTitle {
+        font-size: clamp(34px, 7vw, 52px);
+    }
+
+    .heroDesc {
+        font-size: 16px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 560px) {
+
+    /* área útil */
+    .page--wide,
+    .page--result {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    /* modal */
+    .modalOverlay {
+        padding: 12px;
+        place-items: center;
+    }
+
+    .modalCard {
+        border-radius: 26px;
+        padding: 18px 16px 16px;
+        max-height: calc(100vh - 24px);
+    }
+
+    /* header do modal (logo + stepper) */
+    .modalHeader {
+        grid-template-columns: 40px 1fr 40px;
+        gap: 10px;
+    }
+
+    .modalLogo,
+    .modalHeader__spacer {
+        width: 40px;
+        height: 40px;
+    }
+
+    .stepper {
+        gap: 8px;
+    }
+
+    .step__circle {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+
+    /* título e espaçamentos */
+    .leadTitle {
+        margin: 22px 0 8px;
+        font-size: 22px;
+        line-height: 1.15;
+    }
+
+    .field {
+        margin-top: 18px;
+        gap: 8px;
+    }
+
+    .field__label {
+        font-size: 13px;
+    }
+
+    /* inputs um pouco mais compactos */
+    .input,
+    .select,
+    .customSelect__button {
+        height: 48px;
+        border-radius: 12px;
+    }
+
+    /* radios quebram linha no mobile */
+    .radioRow {
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    /* botões: empilha e ocupa largura toda */
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .actions .btn {
+        width: 100%;
+    }
+
+    /* resultado */
+    .resultWrap {
+        gap: 12px;
+    }
+
+    .resultCard {
+        padding: 14px;
+    }
+
+    .block {
+        padding: 14px;
+    }
+}
+
+/* Telas muito baixas (ex: iPhone SE landscape) */
+@media (max-height: 700px) {
+    .modalCard {
+        max-height: calc(100vh - 24px);
     }
 }
