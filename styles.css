@@ -1313,3 +1313,26 @@ button {
     font-weight: 600;
     color: rgba(29, 29, 29, .50);
 }
+
+/* ====== FORM COMO PÁGINA (SEM MODAL) ====== */
+.page--form {
+    padding-top: 42px;
+    padding-bottom: 42px;
+}
+
+.formCard {
+    width: min(720px, 100%);
+    background: #fff;
+    border: 1px solid rgba(29, 29, 29, .10);
+    border-radius: 40px;
+    padding: 28px 28px 24px;
+    box-shadow: var(--shadow);
+}
+
+.formHeader {
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    /* logo | stepper | spacer */
+    align-items: center;
+    gap: 12px;
+}
