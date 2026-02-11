@@ -273,7 +273,42 @@ $$('input[name="hasSystem"]').forEach(r => {
     r.addEventListener("change", validateLeadSteps);
 });
 
-/* Submit -> Result */
+/* Submit -> Await -> Result */
+let awaitTimer = null;
+let awaitMsgTimer = null;
+
+function startAwaitThenResult() {
+    // entra na tela de await
+    setActiveView("await");
+
+    // sequência de mensagens (3s total)
+    const msgs = [
+        "Processando suas respostas…",
+        "Calculando o impacto no seu faturamento…",
+        "Preparando seu resultado…"
+    ];
+
+    const msgEl = $("#awaitMsg");
+    let i = 0;
+
+    if (msgEl) msgEl.textContent = msgs[0];
+
+    // troca msg a cada 1s
+    clearInterval(awaitMsgTimer);
+    awaitMsgTimer = setInterval(() => {
+        i = Math.min(i + 1, msgs.length - 1);
+        if (msgEl) msgEl.textContent = msgs[i];
+    }, 1000);
+
+    // após 3s, atualiza UI e vai pro resultado
+    clearTimeout(awaitTimer);
+    awaitTimer = setTimeout(() => {
+        clearInterval(awaitMsgTimer);
+        updateResultUI();
+        setActiveView("result");
+    }, 4000);
+}
+
 $("#leadForm")?.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -285,9 +320,9 @@ $("#leadForm")?.addEventListener("submit", (e) => {
     if (!v.ok5) return setLeadStep(5);
     if (!v.ok6) return setLeadStep(6);
 
-    updateResultUI();
-    setActiveView("result");
+    startAwaitThenResult();
 });
+
 
 /* CTAs */
 $("#ctaStrategyBtn")?.addEventListener("click", () => {

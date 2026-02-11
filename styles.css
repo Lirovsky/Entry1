@@ -1253,3 +1253,63 @@ button {
         max-height: calc(100vh - 24px);
     }
 }
+
+/* ====== AWAIT ====== */
+.page--await {
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-top: 42px;
+}
+
+.awaitCard {
+    width: min(560px, 100%);
+    background: rgba(255, 255, 255, .92);
+    border: 1px solid rgba(29, 29, 29, .10);
+    border-radius: 28px;
+    box-shadow: 0 24px 60px rgba(29, 29, 29, .10);
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+}
+
+.awaitSpinner {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 3px solid rgba(29, 29, 29, .12);
+    border-top-color: rgba(29, 29, 29, .82);
+    animation: spin 0.9s linear infinite;
+    margin-bottom: 6px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.awaitTitle {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: rgba(29, 29, 29, .90);
+}
+
+.awaitSub {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(29, 29, 29, .62);
+    line-height: 1.45;
+    min-height: 2.2em;
+    /* evita “pular” quando troca a msg */
+}
+
+.awaitHint {
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(29, 29, 29, .50);
+}
