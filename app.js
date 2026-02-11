@@ -66,6 +66,14 @@ function updateSteppers(active) {
     });
 }
 
+
+function updateMiniStepper(currentStep, totalSteps = 6) {
+    const text = document.getElementById("stepMiniText");
+    const fill = document.getElementById("stepMiniFill");
+    if (text) text.textContent = `Etapa ${currentStep} de ${totalSteps}`;
+    if (fill) fill.style.width = `${(currentStep / totalSteps) * 100}%`;
+}
+
 /* ====== Helpers ====== */
 
 function onlyDigits(s) {
@@ -139,6 +147,9 @@ function setLeadStep(n) {
     updateSteppers(n);
     validateLeadSteps();
     focusLeadStep(n);
+    updateMiniStepper(n, 6);
+
+
 }
 
 function focusLeadStep(n) {

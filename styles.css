@@ -1336,3 +1336,60 @@ button {
     align-items: center;
     gap: 12px;
 }
+
+/* ===== STEPPER RESPONSIVO ===== */
+.stepperMini {
+    display: none;
+}
+
+@media (max-width: 430px) {
+
+    /* Esconde as bolinhas no mobile pequeno */
+    .stepper-wrap {
+        display: none;
+    }
+
+    /* Mostra o stepper compacto */
+    .stepperMini {
+        display: grid;
+        gap: 8px;
+        align-items: center;
+        justify-items: center;
+    }
+
+    .stepperMini__top {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .stepperMini__text {
+        font-size: 13px;
+        font-weight: 700;
+        color: rgba(29, 29, 29, .78);
+        letter-spacing: -0.01em;
+    }
+
+    .stepperMini__bar {
+        width: 100%;
+        height: 10px;
+        background: rgba(29, 29, 29, .08);
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .stepperMini__fill {
+        height: 100%;
+        border-radius: 999px;
+        background: var(--accent, #00C2A8);
+        /* ou sua cor principal */
+        width: 16.66%;
+        transition: width .25s ease;
+    }
+
+    /* Ajusta header para não “espremer” */
+    .formHeader {
+        grid-template-columns: 44px 1fr 44px;
+        align-items: center;
+    }
+}
