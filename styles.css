@@ -178,7 +178,7 @@ body {
 .btn {
     border: 0;
     border-radius: 10px;
-    padding: 14px 18px;
+    padding: 16px 18px 14px;
     font-weight: 750;
     cursor: pointer;
     display: inline-flex;
@@ -242,6 +242,15 @@ body {
 
 .btn__arrow {
     font-weight: 900;
+    margin-bottom: 3px;
+}
+
+.btn-none {
+    background: none;
+    border: none;
+    color: rgba(29, 29, 29, .78);
+    padding: 12px 8px;
+    border-radius: 12px;
 }
 
 /* Hero */
@@ -838,20 +847,26 @@ select.select {
 .radioPill {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
     user-select: none;
-    padding: 6px 0;
+    padding: 2px 0;
     color: rgba(29, 29, 29, .82);
     font-weight: 650;
+}
+
+.radioPill span {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
 }
 
 .radioPill input {
     appearance: none;
     -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
-    border-radius: 7px;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
     border: 2px solid rgba(154, 153, 152, .55);
     background: #fff;
     display: inline-block;
@@ -866,14 +881,15 @@ select.select {
 .radioPill input:checked::after {
     content: "";
     position: absolute;
-    left: 6px;
-    top: 3px;
+    border: solid #fff;
+    left: 50%;
+    top: 50%;
     width: 6px;
     height: 10px;
-    border: solid #fff;
     border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+    transform: translate(-50%, -60%) rotate(45deg);
 }
+
 
 /* Phone prefix field (print) */
 .phone {
@@ -1221,7 +1237,10 @@ button {
     .radioRow {
         gap: 14px;
         flex-wrap: wrap;
+        margin-top: 4px;
+        /* antes 8px */
     }
+
 
     /* botões: empilha e ocupa largura toda */
     .actions {
