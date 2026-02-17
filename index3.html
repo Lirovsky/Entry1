@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diagnóstico Financeiro • Clínica Experts</title>
+    <link rel="stylesheet" href="styles2.css" />
+</head>
+
+<body>
+    <main class="app">
+        <!-- LANDING -->
+        <section class="view is-active" data-view="landing" aria-hidden="false">
+            <div class="page page--hero page--wide">
+                <div class="heroSplit heroSplit--center">
+                    <div class="heroCopy">
+                        <div class="heroKicker">
+                            <span class="heroKicker__spark" aria-hidden="true">✦</span>
+                            Diagnóstico Financeiro
+                        </div>
+
+                        <h1 class="heroTitle">
+                            <span class="heroTitle__muted">Sua clínica tem</span><br />
+                            <span class="heroTitle__strong">salas vazias?</span>
+                        </h1>
+
+                        <p class="heroDesc">Veja quanto isso custa no seu bolso.</p>
+
+                        <p class="heroSub">
+                            Faça a simulação em 2 minutos e descubra seu prejuízo real.
+                        </p>
+
+                        <div class="heroCtas">
+                            <button class="btn btn--primary btn--lg" id="startBtn" type="button">
+                                Calcular meu prejuízo
+                                <span class="btn__arrow" aria-hidden="true">→</span>
+                            </button>
+                        </div>
+
+                        <div class="heroMeta">
+                            <div class="heroMeta__item">
+                                <span aria-hidden="true">🛡️</span> Conformidade com a LGPD
+                            </div>
+                            <div class="heroMeta__item heroMeta__muted">
+                                Gratuito • Sem compromisso • Resultado imediato
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="view" data-view="lead" aria-hidden="true">
+            <div class="page page--form page--wide">
+                <div class="formCard">
+                    <div class="formHeader">
+                        <img src="logo.svg" class="modalLogo" />
+
+                        <div class="stepper-wrap">
+                            <ol class="stepper" aria-label="Progresso">
+                                <li class="step is-current" data-index="1"><span class="step__circle">1</span></li>
+                                <li class="step is-upcoming" data-index="2"><span class="step__circle">2</span></li>
+                                <li class="step is-upcoming" data-index="3"><span class="step__circle">3</span></li>
+                            </ol>
+                        </div>
+                        <!-- STEPPER COMPACTO (só no mobile pequeno) -->
+                        <div class="stepperMini" aria-label="Progresso">
+                            <div class="stepperMini__top">
+                                <span class="stepperMini__text" id="stepMiniText">Etapa 1 de 3</span>
+                            </div>
+                            <div class="stepperMini__bar" aria-hidden="true">
+                                <div class="stepperMini__fill" id="stepMiniFill" style="width: 33.33%"></div>
+                            </div>
+                        </div>
+
+
+                        <div class="modalHeader__spacer" aria-hidden="true"></div>
+                    </div>
+
+
+
+                    <form id="leadForm" novalidate>
+                        <!-- 1 -->
+                        <div class="leadStep is-active" data-lead-step="1">
+                            <div class="leadTitle">Definição de escala</div>
+
+                            <label class="field">
+                                <span class="field__label">Quantas cadeiras de atendimento a clínica possui?</span>
+                                <input class="input" id="chairsInput" inputmode="numeric" placeholder="Ex.: 3" />
+                            </label>
+
+                            <div class="divider"></div>
+
+                            <div class="actions">
+                                <button class="btn btn-none" data-back="landing" type="button">
+                                    Voltar
+                                </button>
+                                <button class="btn btn--primary" id="leadNext1" type="button" disabled>
+                                    Continuar <span class="btn__arrow" aria-hidden="true">→</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2 -->
+                        <div class="leadStep" data-lead-step="2">
+                            <div class="leadTitle">Valor de mercado</div>
+
+                            <label class="field">
+                                <span class="field__label">Em média, quanto sua clínica fatura por hora de
+                                    atendimento?</span>
+                                <input class="input" id="hourValueInput" inputmode="numeric" placeholder="Ex.: 250" />
+                            </label>
+
+                            <div class="divider"></div>
+
+                            <div class="actions">
+                                <button class="btn btn-none" id="leadBack2" type="button">
+                                    Voltar
+                                </button>
+                                <button class="btn btn--primary" id="leadNext2" type="button" disabled>
+                                    Continuar <span class="btn__arrow" aria-hidden="true">→</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3 -->
+                        <div class="leadStep" data-lead-step="3">
+                            <div class="leadTitle">Diagnóstico da dor</div>
+
+                            <label class="field">
+                                <span class="field__label">Em uma semana típica, somando todas as salas profissionais,
+                                    quantos horários ficam vagos ou viram faltas?</span>
+                                <input class="input" id="holesInput" inputmode="numeric" placeholder="Ex.: 8" />
+                            </label>
+
+                            <div class="divider"></div>
+
+                            <div class="actions">
+                                <button class="btn btn-none" id="leadBack3" type="button">
+                                    Voltar
+                                </button>
+                                <button class="btn btn--primary" id="toResultBtn" type="submit" disabled>
+                                    Ver resultado <span class="btn__arrow" aria-hidden="true">→</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- AWAIT -->
+        <section class="view" data-view="await" aria-hidden="true">
+            <div class="page page--await">
+                <div class="awaitCard">
+                    <div class="awaitSpinner" aria-hidden="true"></div>
+
+                    <div class="awaitTitle">Estamos finalizando seu diagnóstico</div>
+                    <div class="awaitSub" id="awaitMsg">Processando suas respostas…</div>
+
+                    <div class="awaitHint">Isso leva só alguns segundos.</div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- RESULT -->
+        <section class="view" data-view="result" aria-hidden="true">
+            <div class="page page--result">
+                <div class="resultWrap">
+                    <p class="result__kicker">
+                        <span id="resultName">Sua clínica</span> está deixando na mesa:
+                    </p>
+
+                    <div class="result__value">
+                        <div class="result__money" id="resultAnnualLoss">R$ 0</div>
+                        <div class="result__per">por ano</div>
+                    </div>
+
+                    <div class="resultCard">
+                        <div class="resultCard__top">
+                            Isso significa que você está perdendo <strong id="resultWeeklyLoss">R$ 0</strong> toda
+                            semana.
+                        </div>
+
+                        <div class="resultCard__grid">
+                            <div class="mini">
+                                <div class="mini__label">Com esse valor, você poderia comprar</div>
+                                <div class="mini__big" id="resultEquipCount">0 equipamentos</div>
+                                <div class="mini__sub">de R$ 15.000 cada</div>
+                            </div>
+
+                            <div class="mini">
+                                <div class="mini__label">Ou investir em tráfego pago</div>
+                                <div class="mini__big" id="resultMonthlyAd">R$ 0/mês</div>
+                                <div class="mini__sub">sem tirar do seu bolso</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="block block--dark">
+                        <div class="block__title">Onde esse dinheiro está indo?</div>
+                        <div class="block__text">
+                            Ele está na mão da concorrência ou perdido na falta de processos de confirmação e vendas.
+                        </div>
+                    </div>
+
+                    <div class="block block--note">
+                        <p class="block__text">
+                            Em breve, um consultor entra em contato para entender seu cenário e te ajudar a reduzir
+                            essas perdas.
+                        </p>
+                    </div>
+
+
+                    <!--    
+                    <button class="btn btn--primary btn--lg" type="button" id="ctaStrategyBtn">
+                        Agendar Sessão Estratégica <span class="btn__arrow" aria-hidden="true">→</span>
+                    </button>
+
+                    <button class="btn btn--outline btn--lg" type="button" id="ctaWhatsBtn">
+                        Falar no WhatsApp
+                    </button>
+                    -->
+                </div>
+            </div>
+        </section>
+
+        <!-- POPUP (antes do resultado) -->
+        <div class="modalOverlay" id="preResultModal" hidden aria-hidden="true">
+            <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="preResultHeading">
+                <div class="modalHeader">
+                    <img src="logo.svg" class="modalLogo" alt="Clínica Experts" />
+
+                    <div class="stepperModal-wrap">
+                        <ol class="stepperModal" aria-label="Progresso">
+                            <li class="stepModal is-current" data-index="1"><span class="step__circle">1</span></li>
+                            <li class="stepModal is-upcoming" data-index="2"><span class="step__circle">2</span></li>
+                        </ol>
+                    </div>
+
+                    <div class="modalHeader__spacer" aria-hidden="true"></div>
+                </div>
+
+                <form id="preResultForm" novalidate>
+                    <!-- Etapa 1 -->
+                    <div class="qualifyStep is-active" data-qualify-step="1">
+                        <div class="leadTitle" id="preResultHeading">Para desbloquear seu resultado preencha as
+                            informações abaixo</div>
+
+                        <label class="field">
+                            <span class="field__label">Qual é a área principal da sua clínica?</span>
+                            <select class="select" id="areaInput">
+                                <option value="">Selecione</option>
+                                <option>Estética</option>
+                                <option>Médicina</option>
+                                <option>Biomedicina</option>
+                                <option>Odontologia</option>
+                                <option>Fisioterapia</option>
+                                <option>Psicologia</option>
+                                <option>Nutrição</option>
+                                <option>Podologia</option>
+                                <option>Massoterapia</option>
+                                <option>Micropigmentação</option>
+                                <option>Microblading</option>
+                                <option>Depilação</option>
+                                <option>Lash Designer</option>
+                                <option>Manicure/Pedicure</option>
+                                <option>Salão de beleza</option>
+                                <option>Outra</option>
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">Quantas pessoas fazem parte da sua equipe?</span>
+                            <select class="select" id="teamSizeInput">
+                                <option value="">Selecione</option>
+                                <option>Somente eu</option>
+                                <option>Eu e mais uma pessoa</option>
+                                <option>De 3 a 5 pessoas</option>
+                                <option>De 6 a 10 pessoas</option>
+                                <option>Mais de 10 pessoas</option>
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">Você já é cliente/assinante do Clínica Experts?</span>
+                            <select class="select" id="subscriberInput">
+                                <option value="">Selecione</option>
+                                <option>Sim</option>
+                                <option>Não</option>
+                            </select>
+                        </label>
+
+                        <div class="divider"></div>
+
+                        <div class="actions">
+                            <button class="btn btn-none" id="qualifyCancelBtn" type="button">Voltar</button>
+                            <button class="btn btn--primary" id="qualifyNextBtn" type="button" disabled>
+                                Avançar <span class="btn__arrow" aria-hidden="true">→</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Etapa 2 -->
+                    <div class="qualifyStep" data-qualify-step="2">
+
+                        <label class="field">
+                            <span class="field__label">Qual seu nome?</span>
+                            <input class="input" id="nameInput" placeholder="Ex.: Ana Roberta" />
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">WhatsApp</span>
+                            <input class="input" id="phoneInput" inputmode="numeric" placeholder="Ex.: 51999999999" />
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">E-mail</span>
+                            <input class="input" id="emailInput" inputmode="email"
+                                placeholder="Ex.: voce@clinica.com.br" />
+                        </label>
+
+                        <div class="divider"></div>
+
+                        <div class="actions">
+                            <button class="btn btn-none" id="qualifyBackBtn" type="button">Voltar</button>
+                            <button class="btn btn--primary" id="qualifySubmitBtn" type="submit" disabled>
+                                Receber resultado <span class="btn__arrow" aria-hidden="true">→</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="app3.js"></script>
+</body>
+
+</html>
