@@ -27,6 +27,9 @@ const state = {
     leadEmail: "",
 };
 
+const POPUP_WEBHOOK_URL = "https://n8n.clinicaexperts.com.br/webhook/d2f443f4-9d71-4b35-b370-96cefea1e9f8";
+
+
 const WEEKS_PER_YEAR = 48;
 const RECOVERABLE_RATE = 0.8;
 const EQUIPMENT_PRICE = 15000;
@@ -41,6 +44,8 @@ const preResultForm = $("#preResultForm");
 const QUALIFY_TOTAL_STEPS = 2;
 let qualifyStepIndex = 1;
 let lastFocusEl = null;
+
+
 
 function updateQualifyStepper(active) {
     if (!preResultModal) return;
@@ -225,6 +230,227 @@ function formatBRL(n) {
         maximumFractionDigits: 0,
     }).format(v);
 }
+
+function getCookie(name) {
+    const cookies = String(document.cookie || "").split(";").map(s => s.trim());
+    for (const c of cookies) {
+        if (c.startsWith(name + "=")) return decodeURIComponent(c.slice(name.length + 1));
+    }
+    return "";
+}
+
+function formatPhoneBR_E164(rawDigits) {
+    const d = onlyDigits(rawDigits);
+    if (!d) return "";
+    // se já tem 55 na frente, mantém
+    if (d.startsWith("55")) return `+55 ${d.slice(2)}`;
+    return `+55 ${d}`;
+}
+
+function normalizeTeam(teamLabel) {
+    const t = String(teamLabel || "").trim();
+    const map = {
+        "Somente eu": "1",
+        "Eu e mais uma pessoa": "2",
+        "De 3 a 5 pessoas": "3 a 5",
+        "De 6 a 10 pessoas": "6 a 10",
+        "Mais de 10 pessoas": "Mais de 10",
+    };
+    return map[t] || t;
+}
+
+function getOrCreateEventId() {
+    try {
+        let eventId = window.localStorage.getItem("lead_event_id");
+        if (!eventId) {
+            const uuid =
+                (window.crypto && typeof window.crypto.randomUUID === "function")
+                    ? window.crypto.randomUUID()
+                    : `${Date.now()}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
+
+            eventId = "lead-" + uuid;
+            window.localStorage.setItem("lead_event_id", eventId);
+        }
+        return eventId;
+    } catch (_) {
+        // fallback sem storage
+        const uuid =
+            (window.crypto && typeof window.crypto.randomUUID === "function")
+                ? window.crypto.randomUUID()
+                : `${Date.now()}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
+        return "lead-" + uuid;
+    }
+}
+
+function getFbp() {
+    // 1) cookie _fbp
+    const fromCookie = getCookie("_fbp");
+    if (fromCookie) return fromCookie;
+
+    // 2) param opcional na URL (se existir)
+    const p = new URLSearchParams(window.location.search || "");
+    return p.get("fbp") || "";
+}
+
+
+function mapAreaSlug(areaLabel) {
+    const a = String(areaLabel || "").trim().toLowerCase();
+
+    const map = {
+        "estética": "aesthetic",
+        "odontologia": "dentistry",
+        "medicina": "medicine",
+        "biomedicina": "biomedicine",
+        "fisioterapia": "physiotherapy",
+        "psicologia": "psychology",
+        "nutrição": "nutrition",
+        "podologia": "podiatry",
+        "massoterapia": "massage-therapy",
+        "micropigmentação": "micropigmentation",
+        "microblading": "microblading",
+        "manicure/pedicure": "manicure-pedicure",
+        "lash designer": "lash-designer",
+        "depilação": "depilation",
+        "salão de beleza": "beauty",
+        "outra": "default",
+    };
+
+    return map[a] || "";
+}
+
+
+function pickTrackingFromUrl() {
+    const p = new URLSearchParams(window.location.search || "");
+
+    const out = {};
+    const keys = [
+        "utm_campaign",
+        "utm_content",
+        "utm_id",
+        "utm_medium",
+        "utm_source",
+        "utm_term",
+        "fbclid",
+        "gclid",
+        "wbraid",
+        "gbraid",
+    ];
+
+    keys.forEach((k) => {
+        const v = p.get(k);
+        if (v) out[k] = v;
+    });
+
+    // caso venha com hífen (utm-search)
+    const utmSearch = p.get("utm_search") || p.get("utm-search");
+    if (utmSearch) out.utm_search = utmSearch;
+
+    return out;
+}
+
+function buildPopupWebhookPayload() {
+    // garante state atualizado
+    readQualifyInputs();
+
+    // valores do popup
+    const area = mapAreaSlug(state.area);
+    const team = normalizeTeam(state.teamSize);
+    const active = state.isSubscriber || "";
+    const name = state.leadName || "";
+    const phone = state.leadPhone ? formatPhoneBR_E164(state.leadPhone) : "";
+    const email = state.leadEmail || "";
+
+    // ids / tracking
+    const event_id = getOrCreateEventId();
+    const fbp = getFbp();
+
+    const referrer = document.referrer || "";
+    const source_url = window.location.href;
+    const user_agent = navigator.userAgent || "";
+
+    const urlFields = pickTrackingFromUrl();
+
+    // monta na ordem do print
+    const payload = {};
+
+    if (active) payload.active = active;
+    if (area) payload.area = area;
+
+    payload.challenge = "Diagnostico 1";
+
+    if (email) payload.email = email;
+
+    payload.event = "diagnostico";
+    payload.event_id = event_id;
+
+    if (urlFields.fbclid) payload.fbclid = urlFields.fbclid;
+    if (urlFields.gclid) payload.gclid = urlFields.gclid;
+    if (urlFields.wbraid) payload.wbraid = urlFields.wbraid;
+    if (urlFields.gbraid) payload.gbraid = urlFields.gbraid;
+
+    if (fbp) payload.fbp = fbp;
+
+    payload.money = "Diagnostico 1";
+
+    if (name) payload.name = name;
+    if (phone) payload.phone = phone;
+
+    payload.referrer = referrer;
+    payload.source_url = source_url;
+
+    payload.system = "Diagnostico 1";
+
+    if (team) payload.team = team;
+
+    payload.user_agent = user_agent;
+
+    if (urlFields.utm_campaign) payload.utm_campaign = urlFields.utm_campaign;
+    if (urlFields.utm_content) payload.utm_content = urlFields.utm_content;
+    if (urlFields.utm_id) payload.utm_id = urlFields.utm_id;
+    if (urlFields.utm_medium) payload.utm_medium = urlFields.utm_medium;
+    if (urlFields.utm_source) payload.utm_source = urlFields.utm_source;
+    if (urlFields.utm_term) payload.utm_term = urlFields.utm_term;
+    if (urlFields.utm_search) payload.utm_search = urlFields.utm_search;
+
+    return payload;
+}
+
+
+async function postToWebhook(url, payloadObj) {
+    const body = JSON.stringify(payloadObj);
+
+    // 1) tenta JSON normal
+    try {
+        await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body,
+            keepalive: true,
+        });
+        return;
+    } catch (_) { }
+
+    // 2) fallback sem preflight (beacon)
+    try {
+        if (navigator.sendBeacon) {
+            const blob = new Blob([body], { type: "text/plain;charset=UTF-8" });
+            navigator.sendBeacon(url, blob);
+            return;
+        }
+    } catch (_) { }
+
+    // 3) fallback no-cors (texto) — não dá pra ler resposta, mas envia
+    try {
+        await fetch(url, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=UTF-8" },
+            body,
+            keepalive: true,
+        });
+    } catch (_) { }
+}
+
 
 function compute() {
     const rooms = Number(state.rooms || 0);
@@ -461,7 +687,6 @@ $("#leadForm")?.addEventListener("submit", (e) => {
     openPreResultModal();
 });
 
-// Submit do popup -> segue o fluxo original (await -> result)
 preResultForm?.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -469,9 +694,15 @@ preResultForm?.addEventListener("submit", (e) => {
     if (!v.okStep1) return setQualifyStep(1);
     if (!v.okStep2) return setQualifyStep(2);
 
+    // envia (fire-and-forget)
+    const payload = buildPopupWebhookPayload();
+    void postToWebhook(POPUP_WEBHOOK_URL, payload);
+
     closePreResultModal();
     startAwaitThenResult();
 });
+
+
 
 /* CTAs */
 $("#ctaStrategyBtn")?.addEventListener("click", () => {
@@ -541,9 +772,38 @@ function initCustomSelects() {
             });
         }
 
+        function positionMenu() {
+            const rect = btn.getBoundingClientRect();
+            const gap = 8;
+            const padding = 12;
+
+            // Se estiver dentro do modal, usa o modal como "viewport"
+            const modal = btn.closest(".modalCard");
+            const bounds = modal
+                ? modal.getBoundingClientRect()
+                : { top: 0, bottom: window.innerHeight };
+
+            const spaceBelow = bounds.bottom - rect.bottom;
+            const spaceAbove = rect.top - bounds.top;
+
+            // Baseado no seu CSS (max-height ~ 200px), usa um limiar coerente
+            const wanted = 200;
+
+            const shouldOpenUp = spaceBelow < wanted && spaceAbove > spaceBelow;
+            wrapper.classList.toggle("is-open-up", shouldOpenUp);
+
+            const available = (shouldOpenUp ? spaceAbove : spaceBelow) - (gap + padding);
+            const clamped = Math.max(140, Math.min(220, available)); // menu menor no mobile
+            menu.style.maxHeight = `${clamped}px`;
+        }
+
+
+
         function open() {
             wrapper.classList.add("is-open");
             btn.setAttribute("aria-expanded", "true");
+
+            positionMenu();
 
             const v = sel.value;
             let target = optionButtons.find((b) => b.dataset.value === v) || null;
@@ -551,10 +811,19 @@ function initCustomSelects() {
             target && target.focus();
         }
 
+
         function close() {
             wrapper.classList.remove("is-open");
             btn.setAttribute("aria-expanded", "false");
         }
+
+        const modal = btn.closest(".modalCard");
+        if (modal) {
+            modal.addEventListener("scroll", () => {
+                if (wrapper.classList.contains("is-open")) positionMenu();
+            }, { passive: true });
+        }
+
 
         function toggle() {
             if (wrapper.classList.contains("is-open")) close();
