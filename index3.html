@@ -206,51 +206,152 @@
                         </div>
                     </div>
 
-                    <div class="block block--note">
-                        <p class="block__text">
-                            Em breve, um consultor entra em contato para entender seu cenário e te ajudar a reduzir
-                            essas perdas.
-                        </p>
+                    <div class="resultCtas" aria-label="Ações">
+                        <a class="btn btn--primary btn--lg btn--block" id="ctaTrialBtn"
+                            href="https://app.clinicaexperts.com.br/signup">
+                            Teste grátis <span class="btn__arrow" aria-hidden="true">→</span>
+                        </a>
+                        <button class="btn btn--purple btn--lg btn--block" id="ctaSpecialistBtn" type="button">
+                            Fale com um especialista <span class="btn__arrow" aria-hidden="true">→</span>
+                        </button>
                     </div>
-
-
-                    <!--    
-                    <button class="btn btn--primary btn--lg" type="button" id="ctaStrategyBtn">
-                        Agendar Sessão Estratégica <span class="btn__arrow" aria-hidden="true">→</span>
-                    </button>
-
-                    <button class="btn btn--outline btn--lg" type="button" id="ctaWhatsBtn">
-                        Falar no WhatsApp
-                    </button>
-                    -->
                 </div>
             </div>
         </section>
 
-        <!-- POPUP (antes do resultado) -->
+        <!-- THANK YOU (após envio no modal do especialista) -->
+        <section class="view" data-view="specialistThanks" aria-hidden="true">
+            <div class="page page--thanks">
+                <div class="thanksWrap">
+                    <div class="thanksTitle">Feito!</div>
+                    <div class="thanksSub">Em breve um dos nossos especialistas entrará em contato com você pelo
+                        WhatsApp.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODAL (desbloquear resultado) -->
         <div class="modalOverlay" id="preResultModal" hidden aria-hidden="true">
-            <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="preResultHeading">
-                <div class="modalHeader">
-                    <img src="logo.svg" class="modalLogo" alt="Clínica Experts" />
-
-                    <div class="stepperModal-wrap">
-                        <ol class="stepperModal" aria-label="Progresso">
-                            <li class="stepModal is-current" data-index="1"><span class="step__circle">1</span></li>
-                            <li class="stepModal is-upcoming" data-index="2"><span class="step__circle">2</span></li>
-                        </ol>
-                    </div>
-
-                    <div class="modalHeader__spacer" aria-hidden="true"></div>
+            <div class="modalCard modalCard--specialist" role="dialog" aria-modal="true"
+                aria-labelledby="preResultHeadingModal">
+                <div class="specialistHeader">
+                    <button class="iconBtn" id="preResultCloseBtn" type="button" aria-label="Fechar">×</button>
+                    <div class="specialistHeader__title" id="preResultHeadingModal">Desbloquear resultado</div>
+                    <div class="specialistHeader__spacer" aria-hidden="true"></div>
                 </div>
 
-                <form id="preResultForm" novalidate>
+                <form id="preResultFormShort" novalidate>
+                    <div class="leadTitle" id="preResultHeading">Para desbloquear seu resultado preencha as informações
+                        abaixo</div>
+
+                    <label class="field">
+                        <span class="field__label">Qual seu nome?</span>
+                        <input class="input" id="preNameInput" placeholder="Ex.: Ana Roberta" />
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">WhatsApp</span>
+                        <input class="input" id="prePhoneInput" inputmode="numeric" maxlength="11" pattern="[0-9]*"
+                            autocomplete="tel" placeholder="Ex.: 51999999999" />
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">E-mail</span>
+                        <input class="input" id="preEmailInput" inputmode="email"
+                            placeholder="Ex.: voce@clinica.com.br" />
+                    </label>
+
+
+                    <div class="divider"></div>
+
+                    <div class="actions">
+                        <button class="btn btn-none" id="preResultCancelBtn" type="button">Voltar</button>
+                        <button class="btn btn--primary" id="preResultSubmitBtn" type="submit" disabled>
+                            Receber resultado <span class="btn__arrow" aria-hidden="true">→</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL (falar com especialista) -->
+        <div class="modalOverlay" id="specialistModal" hidden aria-hidden="true">
+            <div class="modalCard modalCard--specialist" role="dialog" aria-modal="true"
+                aria-labelledby="specialistHeading">
+                <div class="specialistHeader">
+                    <button class="iconBtn" id="specialistCloseBtn" type="button" aria-label="Fechar">×</button>
+                    <div class="specialistHeader__title" id="specialistHeading">Falar com especialista</div>
+                    <div class="specialistHeader__spacer" aria-hidden="true"></div>
+                </div>
+
+                <div class="stepperModal-wrap">
+                    <ol class="stepperModal" aria-label="Progresso">
+                        <li class="stepModal is-current" data-index="1"><span class="step__circle">1</span></li>
+                        <li class="stepModal is-upcoming" data-index="2"><span class="step__circle">2</span></li>
+                        <li class="stepModal is-upcoming" data-index="3"><span class="step__circle">3</span></li>
+                    </ol>
+                </div>
+
+                <form id="specialistForm" novalidate>
+
                     <!-- Etapa 1 -->
                     <div class="qualifyStep is-active" data-qualify-step="1">
-                        <div class="leadTitle" id="preResultHeading">Para desbloquear seu resultado preencha as
+                        <div class="leadTitle" id="specialistStepHeading">Para falar com o especialista preencha as
                             informações abaixo</div>
 
                         <label class="field">
-                            <span class="field__label">Qual é a área principal da sua clínica?</span>
+                            <span class="field__label">Qual desafio você busca resolver?</span>
+                            <select class="select" id="challengeInput">
+                                <option value="">Selecione</option>
+                                <option>Falta de organização na agenda e nos atendimentos</option>
+                                <option>Dificuldade para acompanhar o financeiro da clínica</option>
+                                <option>Falta de controle sobre comissões e repasses</option>
+                                <option>Gestão confusa de estoque e consumo de produtos</option>
+                                <option>Perda de tempo digitando anotações durante e após os atendimentos</option>
+                                <option>Perda de tempo com papelada e assinaturas manuais</option>
+                                <option>Dificuldade em responder pacientes fora do horário ou em grande volume de
+                                    mensagens</option>
+                                <option>Envio de lembretes e confirmações pelo WhatsApp</option>
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">Quantas pessoas terão acesso ao sistema?</span>
+                            <select class="select" id="teamSizeInput">
+                                <option value="">Selecione</option>
+                                <option>Somente eu</option>
+                                <option>Eu e mais uma pessoa</option>
+                                <option>De 3 a 5 pessoas</option>
+                                <option>De 6 a 10 pessoas</option>
+                                <option>Mais de 10 pessoas</option>
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field__label">Você já utiliza algum sistema de gestão?</span>
+                            <select class="select" id="usesSystemInput">
+                                <option value="">Selecione</option>
+                                <option>Sim</option>
+                                <option>Não</option>
+                            </select>
+                        </label>
+
+                        <div class="divider"></div>
+
+                        <div class="actions">
+                            <button class="btn btn-none" id="qualifyCancelBtn" type="button">Voltar</button>
+                            <button class="btn btn--primary" id="qualifyNextBtn" type="button" disabled>
+                                Avançar <span class="btn__arrow" aria-hidden="true">→</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Etapa 2 -->
+                    <div class="qualifyStep" data-qualify-step="2">
+                        <div class="leadTitle">Só mais algumas perguntas</div>
+
+                        <label class="field">
+                            <span class="field__label">Qual sua área de atuação?</span>
                             <select class="select" id="areaInput">
                                 <option value="">Selecione</option>
                                 <option>Estética</option>
@@ -273,20 +374,18 @@
                         </label>
 
                         <label class="field">
-                            <span class="field__label">Quantas pessoas fazem parte da sua equipe?</span>
-                            <select class="select" id="teamSizeInput">
+                            <span class="field__label">Você já é assinante do Clínica Experts?</span>
+                            <select class="select" id="subscriberInput">
                                 <option value="">Selecione</option>
-                                <option>Somente eu</option>
-                                <option>Eu e mais uma pessoa</option>
-                                <option>De 3 a 5 pessoas</option>
-                                <option>De 6 a 10 pessoas</option>
-                                <option>Mais de 10 pessoas</option>
+                                <option>Sim</option>
+                                <option>Não</option>
                             </select>
                         </label>
 
                         <label class="field">
-                            <span class="field__label">Você já é cliente/assinante do Clínica Experts?</span>
-                            <select class="select" id="subscriberInput">
+                            <span class="field__label">Os planos do Clínica Experts iniciam em 12x de R$199. Esse
+                                investimento faz sentido para você neste momento?</span>
+                            <select class="select" id="investmentOkInput">
                                 <option value="">Selecione</option>
                                 <option>Sim</option>
                                 <option>Não</option>
@@ -296,24 +395,24 @@
                         <div class="divider"></div>
 
                         <div class="actions">
-                            <button class="btn btn-none" id="qualifyCancelBtn" type="button">Voltar</button>
-                            <button class="btn btn--primary" id="qualifyNextBtn" type="button" disabled>
+                            <button class="btn btn-none" id="qualifyBackBtn" type="button">Voltar</button>
+                            <button class="btn btn--primary" id="qualifyNextBtn2" type="button" disabled>
                                 Avançar <span class="btn__arrow" aria-hidden="true">→</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Etapa 2 -->
-                    <div class="qualifyStep" data-qualify-step="2">
-
+                    <!-- Etapa 3 -->
+                    <div class="qualifyStep" data-qualify-step="3">
                         <label class="field">
-                            <span class="field__label">Qual seu nome?</span>
+                            <span class="field__label">Seu nome</span>
                             <input class="input" id="nameInput" placeholder="Ex.: Ana Roberta" />
                         </label>
 
                         <label class="field">
                             <span class="field__label">WhatsApp</span>
-                            <input class="input" id="phoneInput" inputmode="numeric" placeholder="Ex.: 51999999999" />
+                            <input class="input" id="phoneInput" inputmode="numeric" maxlength="11" pattern="[0-9]*"
+                                autocomplete="tel" placeholder="Ex.: 51999999999" />
                         </label>
 
                         <label class="field">
@@ -325,9 +424,9 @@
                         <div class="divider"></div>
 
                         <div class="actions">
-                            <button class="btn btn-none" id="qualifyBackBtn" type="button">Voltar</button>
+                            <button class="btn btn-none" id="qualifyBackBtn3" type="button">Voltar</button>
                             <button class="btn btn--primary" id="qualifySubmitBtn" type="submit" disabled>
-                                Receber resultado <span class="btn__arrow" aria-hidden="true">→</span>
+                                Receber mensagem <span class="btn__arrow" aria-hidden="true">→</span>
                             </button>
                         </div>
                     </div>

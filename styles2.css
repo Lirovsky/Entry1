@@ -215,6 +215,22 @@ body {
     background: var(--black);
     color: #fff;
     box-shadow: 0 16px 40px rgba(29, 29, 29, .20);
+    text-decoration: none;
+}
+
+.btn--primary:hover {
+    background: #232323;
+}
+
+.btn--purple {
+    background: var(--brand-purple);
+    color: #fff;
+    box-shadow: 0 16px 40px rgba(175, 71, 255, .22);
+}
+
+.btn--purple:hover {
+    background: #b861fa;
+
 }
 
 .btn--outline {
@@ -974,6 +990,67 @@ select.select {
 }
 
 /* Result */
+
+.resultCtas {
+    width: min(680px, 100%);
+    display: flex;
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.resultCtas>* {
+    flex: 1;
+}
+
+@media (max-width: 620px) {
+    .resultCtas {
+        flex-direction: column;
+    }
+}
+
+.specialistHeader {
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.iconBtn {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    border: 0;
+    background: rgba(29, 29, 29, .10);
+    color: rgba(29, 29, 29, .86);
+    font-size: 22px;
+    font-weight: 900;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background .12s ease, transform .12s ease;
+}
+
+.iconBtn:hover {
+    background: rgba(29, 29, 29, .14);
+}
+
+.iconBtn:active {
+    transform: translateY(1px);
+}
+
+.specialistHeader__title {
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: rgba(29, 29, 29, .92);
+}
+
+.specialistHeader__spacer {
+    width: 44px;
+    height: 44px;
+}
+
 .resultWrap {
     width: min(720px, 100%);
     display: flex;
@@ -1506,4 +1583,31 @@ button {
 
 .modalCard .divider {
     margin: 14px 0;
+}
+
+/* ====== THANKS (Especialista) ====== */
+.page--thanks {
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-top: 42px;
+}
+
+.thanksWrap {
+    width: min(760px, 100%);
+    text-align: center;
+}
+
+.thanksTitle {
+    font-size: clamp(44px, 6vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+}
+
+.thanksSub {
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(29, 29, 29, .55);
+    line-height: 1.55;
 }
