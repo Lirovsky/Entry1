@@ -15,7 +15,6 @@
 
     const state = {
         chairs: null, // cadeiras de atendimento
-        rooms: 1, // compat: cálculo usa rooms (rooms * hourValue * holes)
         hourValue: null,
         holes: null,
 
@@ -69,16 +68,147 @@
         return e.includes("@") && e.includes(".") && e.length >= 6;
     }
 
+    const BRL_FORMATTER = (() => {
+        try {
+            return new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+        } catch (_) {
+            return null;
+        }
+    })();
+
     function formatBRL(n) {
         const v = Number(n);
-        if (!Number.isFinite(v)) return "R$ 0";
+        if (!Number.isFinite(v)) return "R$ 0,00";
+        if (BRL_FORMATTER) return BRL_FORMATTER.format(v);
         return new Intl.NumberFormat("pt-BR", {
             style: "currency",
             currency: "BRL",
-            maximumFractionDigits: 0,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         }).format(v);
     }
 
+
+
+    /* ====================================================================== */
+    /* Result Counter (0 -> valor) */
+    /* ====================================================================== */
+
+    let resultAnimCancels = [];
+
+    function cancelResultCounters() {
+        if (!resultAnimCancels.length) return;
+        resultAnimCancels.forEach((fn) => {
+            try { if (typeof fn === "function") fn(); } catch (_) { }
+        });
+        resultAnimCancels = [];
+    }
+
+    function prefersReducedMotion() {
+        try {
+            return (
+                window.matchMedia &&
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            );
+        } catch (_) {
+            return false;
+        }
+    }
+
+    // Mais desaceleração perto do fim (quanto maior, mais \"freia\" no final)
+    const RESULT_EASING_POWER = 5;
+
+    function easeOutCubic(t) {
+        const x = Math.max(0, Math.min(1, Number(t) || 0));
+        return 1 - Math.pow(1 - x, RESULT_EASING_POWER);
+    }
+
+    function animateNumber({ from = 0, to = 0, duration = 3000, onUpdate, onComplete }) {
+        let raf = 0;
+        let start = 0;
+
+        const cancel = () => {
+            if (!raf) return;
+            try { cancelAnimationFrame(raf); } catch (_) { }
+            raf = 0;
+        };
+
+        const step = (ts) => {
+            if (!start) start = ts;
+            const p = Math.min(1, (ts - start) / Math.max(1, duration));
+            const eased = easeOutCubic(p);
+            const val = from + (to - from) * eased;
+
+            try {
+                if (typeof onUpdate === "function") onUpdate(val);
+            } catch (_) { }
+
+            if (p < 1) raf = requestAnimationFrame(step);
+            else {
+                try {
+                    if (typeof onUpdate === "function") onUpdate(to);
+                    if (typeof onComplete === "function") onComplete();
+                } catch (_) { }
+            }
+        };
+
+        raf = requestAnimationFrame(step);
+        return cancel;
+    }
+
+    function animateCurrency(el, to, suffix, duration) {
+        if (!el) return null;
+        const end = Number(to);
+        const target = Number.isFinite(end) ? end : 0;
+        const dur = Number(duration) > 0 ? Number(duration) : 3000;
+        const suf = String(suffix || "");
+
+        el.textContent = `${formatBRL(0)}${suf}`;
+
+        return animateNumber({
+            from: 0,
+            to: target,
+            duration: dur,
+            onUpdate: (v) => {
+                el.textContent = `${formatBRL(v)}${suf}`;
+            },
+        });
+    }
+
+    function startResultCounters() {
+        cancelResultCounters();
+
+        const { weeklyLoss, annualLoss, monthlyAd } = compute();
+
+        const resultName = $("#resultName");
+        if (resultName) resultName.textContent = "Sua clínica";
+
+        // Preenche os blocos extras (resumo + cálculo) imediatamente
+        fillResultExtras({ weeklyLoss, annualLoss, monthlyAd });
+
+        const annualEl = $("#resultAnnualLoss");
+        const weeklyEl = $("#resultWeeklyLoss");
+
+        if (prefersReducedMotion()) {
+            if (annualEl) annualEl.textContent = `${formatBRL(annualLoss)}/ano`;
+            if (weeklyEl) weeklyEl.textContent = `${formatBRL(weeklyLoss)}/semana`;
+            return;
+        }
+
+        const cancels = [];
+        const c1 = animateCurrency(annualEl, annualLoss, "/ano", 3000);
+        const c2 = animateCurrency(weeklyEl, weeklyLoss, "/semana", 3000);
+
+        if (c1) cancels.push(c1);
+        if (c2) cancels.push(c2);
+
+        resultAnimCancels = cancels;
+    }
     function getCookie(name) {
         const cookies = String(document.cookie || "")
             .split(";")
@@ -386,11 +516,12 @@
     /* ====================================================================== */
 
     function compute() {
-        const rooms = Number(state.rooms || 0);
         const hour = Number(state.hourValue || 0);
+        // "holes" aqui deve representar o TOTAL de horários vagos na semana (somando todas as salas/cadeiras)
         const holes = Number(state.holes || 0);
 
-        const weeklyLoss = rooms * hour * holes;
+        // Se "horários vagos" já é o total semanal da clínica, não multiplica por cadeiras.
+        const weeklyLoss = hour * holes;
         const annualLoss = weeklyLoss * WEEKS_PER_YEAR;
         const recoverable = annualLoss * RECOVERABLE_RATE;
 
@@ -463,25 +594,47 @@
         if (el) el.textContent = formatBRL(annualLoss);
     }
 
+    function fillResultExtras({ weeklyLoss, annualLoss, monthlyAd }) {
+        // Resumo do cenário
+        const chairsEl = $("#resultChairs");
+        if (chairsEl) chairsEl.textContent = state.chairs ? String(state.chairs) : "—";
+
+        const hourEl = $("#resultHourValue");
+        if (hourEl) hourEl.textContent = state.hourValue ? formatBRL(state.hourValue) : "—";
+
+        const holesEl = $("#resultHoles");
+        if (holesEl) holesEl.textContent = state.holes ? String(state.holes) : "—";
+
+        const monthlyEl = $("#resultMonthlyLoss");
+        if (monthlyEl) monthlyEl.textContent = Number.isFinite(Number(monthlyAd)) ? formatBRL(monthlyAd) : "—";
+
+        // Como chegamos nesse número
+        const calcHoles = $("#calcHoles");
+        if (calcHoles) calcHoles.textContent = state.holes ? String(state.holes) : "—";
+
+        const calcHour = $("#calcHourValue");
+        if (calcHour) calcHour.textContent = state.hourValue ? formatBRL(state.hourValue) : "—";
+
+        const calcWeekly = $("#calcWeeklyLoss");
+        if (calcWeekly) calcWeekly.textContent = Number.isFinite(Number(weeklyLoss)) ? formatBRL(weeklyLoss) : "—";
+
+        const calcAnnual = $("#calcAnnualLoss");
+        if (calcAnnual) calcAnnual.textContent = Number.isFinite(Number(annualLoss)) ? formatBRL(annualLoss) : "—";
+    }
+
     function updateResultUI() {
-        const { weeklyLoss, annualLoss, recoverable, equipmentCount, monthlyAd } = compute();
+        const { weeklyLoss, annualLoss, monthlyAd } = compute();
+
         const resultName = $("#resultName");
         if (resultName) resultName.textContent = "Sua clínica";
 
         const annualEl = $("#resultAnnualLoss");
-        if (annualEl) annualEl.textContent = formatBRL(annualLoss);
+        if (annualEl) annualEl.textContent = `${formatBRL(annualLoss)}/ano`;
 
         const weeklyEl = $("#resultWeeklyLoss");
-        if (weeklyEl) weeklyEl.textContent = formatBRL(weeklyLoss);
+        if (weeklyEl) weeklyEl.textContent = `${formatBRL(weeklyLoss)}/semana`;
 
-        const rr = $("#resultRecoverable");
-        if (rr) rr.textContent = formatBRL(recoverable);
-
-        const equipEl = $("#resultEquipCount");
-        if (equipEl) equipEl.textContent = `${equipmentCount || 0} equipamentos`;
-
-        const adEl = $("#resultMonthlyAd");
-        if (adEl) adEl.textContent = `${formatBRL(monthlyAd)}/mês`;
+        fillResultExtras({ weeklyLoss, annualLoss, monthlyAd });
     }
 
     /* ====================================================================== */
@@ -514,7 +667,6 @@
 
     function readAllInputs() {
         state.chairs = parseIntSafe($("#chairsInput")?.value);
-        state.rooms = state.chairs || null;
         state.hourValue = parseIntSafe($("#hourValueInput")?.value);
         state.holes = parseIntSafe($("#holesInput")?.value);
     }
@@ -553,7 +705,11 @@
         const e = $("#preEmailInput");
 
         if (n && !String(n.value || "").trim() && state.leadName) n.value = state.leadName;
-        if (p && !String(p.value || "").trim() && state.leadPhone) p.value = state.leadPhone;
+        if (p && !String(p.value || "").trim() && state.leadPhone) {
+            p.value = state.leadPhone;
+            // Aplica máscara imediatamente quando preenche via código
+            try { p.dispatchEvent(new Event("input", { bubbles: true })); } catch (_) { }
+        }
         if (e && !String(e.value || "").trim() && state.leadEmail) e.value = state.leadEmail;
     }
 
@@ -569,6 +725,10 @@
         preResultModal.hidden = false;
         preResultModal.setAttribute("aria-hidden", "false");
         document.body.style.overflow = "hidden";
+
+        // Recalcula padding do prefixo "+55" agora que o modal está visível
+        requestAnimationFrame(recalcPhonePrefixAll);
+        setTimeout(recalcPhonePrefixAll, 80);
 
         // Se o lead já preencheu antes, reaproveita (state/localStorage)
         loadLeadContactFromStorage(false);
@@ -653,6 +813,11 @@
         if (specialistStepIndex === 3) {
             loadLeadContactFromStorage(false);
             prefillSpecialistFromState();
+
+            // Recalcula o padding do prefixo "+55" agora que o campo ficou visível
+            // (na etapa 3 o container estava oculto, então a medição anterior pode ter sido 0)
+            requestAnimationFrame(recalcPhonePrefixAll);
+            setTimeout(recalcPhonePrefixAll, 80);
         }
 
         validateSpecialistForm();
@@ -737,7 +902,11 @@
         const e = $("#emailInput");
 
         if (n && !String(n.value || "").trim() && state.leadName) n.value = state.leadName;
-        if (p && !String(p.value || "").trim() && state.leadPhone) p.value = state.leadPhone;
+        if (p && !String(p.value || "").trim() && state.leadPhone) {
+            p.value = state.leadPhone;
+            // Aplica máscara imediatamente quando preenche via código
+            try { p.dispatchEvent(new Event("input", { bubbles: true })); } catch (_) { }
+        }
         if (e && !String(e.value || "").trim() && state.leadEmail) e.value = state.leadEmail;
     }
 
@@ -747,6 +916,10 @@
         specialistModal.hidden = false;
         specialistModal.setAttribute("aria-hidden", "false");
         document.body.style.overflow = "hidden";
+
+        // Recalcula padding do prefixo "+55" agora que o modal está visível
+        requestAnimationFrame(recalcPhonePrefixAll);
+        setTimeout(recalcPhonePrefixAll, 80);
 
         // reseta respostas da qualificação (para não reaproveitar seleção anterior)
         state.area = "";
@@ -818,8 +991,8 @@
         clearTimeout(awaitTimer);
         awaitTimer = setTimeout(() => {
             clearInterval(awaitMsgTimer);
-            updateResultUI();
             setActiveView("result");
+            startResultCounters();
         }, 4000);
     }
 
@@ -964,69 +1137,317 @@
         });
     }
 
+    /* ====================================================================== */
+    /* Tecla Enter: atalhos de avanço */
+    /* ====================================================================== */
+
+    function getActiveViewName() {
+        const v = document.querySelector(".view.is-active");
+        return v && v.dataset ? String(v.dataset.view || "") : "";
+    }
+
+    function isAnyModalOpen() {
+        const preOpen = preResultModal && !preResultModal.hidden;
+        const spOpen = specialistModal && !specialistModal.hidden;
+        return !!(preOpen || spOpen);
+    }
+
+    // Landing: Enter inicia a simulação
+    document.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter") return;
+        if (e.isComposing) return;
+        if (isAnyModalOpen()) return;
+
+        const active = getActiveViewName();
+        if (active !== "landing") return;
+
+        // Evita comportamento duplicado quando o foco já está no botão
+        const t = e.target;
+        if (t && t.id === "startBtn") return;
+
+        e.preventDefault();
+        $("#startBtn")?.click();
+    });
+
+    function tryAdvanceLeadByEnter(step) {
+        const active = getActiveViewName();
+        if (active !== "lead") return;
+
+        const v = validateLeadSteps();
+
+        if (step === 1) {
+            if (!v.ok1) return;
+            $("#leadNext1")?.click();
+            return;
+        }
+
+        if (step === 2) {
+            if (!v.ok2) return;
+            $("#leadNext2")?.click();
+            return;
+        }
+
+        if (step === 3) {
+            if (!(v.ok1 && v.ok2 && v.ok3)) return;
+            $("#toResultBtn")?.click();
+        }
+    }
+
+    function bindEnterAdvance(inputEl, step) {
+        if (!inputEl) return;
+        inputEl.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter") return;
+            if (e.isComposing) return;
+            e.preventDefault();
+            tryAdvanceLeadByEnter(step);
+        });
+    }
+
+    // Lead: Enter avança as etapas 1 -> 2 -> 3 e abre o pop-up do resultado
+    bindEnterAdvance(chairsEl, 1);
+    bindEnterAdvance(hourEl, 2);
+    bindEnterAdvance(holesEl, 3);
+
+    function tryAdvanceSpecialistByEnter() {
+        const v = validateSpecialistForm();
+
+        if (specialistStepIndex === 1) {
+            if (!v.okStep1) return false;
+            $("#qualifyNextBtn")?.click();
+            return true;
+        }
+
+        if (specialistStepIndex === 2) {
+            if (!(v.okStep1 && v.okStep2)) return false;
+            $("#qualifyNextBtn2")?.click();
+            return true;
+        }
+
+        return false;
+    }
+
+    // Especialista: Enter nas etapas 1 e 2 (custom selects) avança para a próxima etapa
+    if (specialistForm) {
+        specialistForm.addEventListener(
+            "keydown",
+            (e) => {
+                if (e.key !== "Enter") return;
+                if (e.isComposing) return;
+                if (!specialistModal || specialistModal.hidden) return;
+                if (specialistStepIndex !== 1 && specialistStepIndex !== 2) return;
+
+                const t = e.target;
+                const isCustomBtn =
+                    t && t.classList && t.classList.contains("customSelect__button");
+
+                if (!isCustomBtn) return;
+
+                const wrapper = t.closest(".customSelect");
+                const isOpen = wrapper && wrapper.classList.contains("is-open");
+                if (isOpen) return; // quando o menu está aberto, Enter seleciona opção
+
+                // Só intercepta Enter quando a etapa já está válida (senão deixa abrir o select)
+                const advanced = tryAdvanceSpecialistByEnter();
+                if (!advanced) return;
+
+                e.preventDefault();
+                e.stopPropagation();
+            },
+            true
+        );
+    }
+
+
     $("#preNameInput")?.addEventListener("input", validatePreResultForm);
 
-    function bindPhoneInputHardLimit(inputEl, validateFn) {
-        if (!inputEl) return;
 
-        // HTML-level guard (complementa o bloqueio do JS)
+    // UI: prefixo fixo "+55" dentro do campo (visual, não editável).
+    // O valor do input continua apenas com DDD + número (11 dígitos), e o envio continua usando normalizePhoneBR55().
+    const phonePrefixAdjusters = [];
+    let phonePrefixResizeBound = false;
+
+    function recalcPhonePrefixAll() {
         try {
-            inputEl.setAttribute("maxlength", "11");
-            inputEl.setAttribute("inputmode", "numeric");
-            inputEl.setAttribute("autocomplete", "tel");
-            inputEl.setAttribute("pattern", "[0-9]*");
+            phonePrefixAdjusters.forEach((fn) => {
+                try { if (typeof fn === "function") fn(); } catch (_) { }
+            });
+        } catch (_) { }
+    }
+
+    function ensurePhonePrefixUI(inputEl, prefixText = "+55") {
+        if (!inputEl) return;
+        if (inputEl.dataset.phonePrefixReady === "1") return;
+
+        const parent = inputEl.parentNode;
+        if (!parent) return;
+
+        inputEl.dataset.phonePrefixReady = "1";
+
+        // Cria wrapper para posicionar o prefixo dentro do campo sem alterar o value
+        const wrap = document.createElement("div");
+        wrap.className = "phonePrefixWrap";
+
+        // Mantém comportamento em containers flex
+        wrap.style.width = "100%";
+        wrap.style.flex = "1 1 auto";
+
+        parent.insertBefore(wrap, inputEl);
+        wrap.appendChild(inputEl);
+
+        const prefix = document.createElement("span");
+        prefix.className = "phonePrefix";
+        prefix.textContent = String(prefixText || "+55");
+        wrap.appendChild(prefix);
+
+        const adjustPadding = () => {
+            try {
+                // 16px é o padding padrão do .input
+                const baseLeft = 16;
+                const gap = 10;
+                const wRaw = Math.ceil(prefix.getBoundingClientRect().width || 0);
+                const w = Math.max(32, wRaw); // fallback quando o modal ainda está oculto
+                inputEl.style.paddingLeft = (baseLeft + w + gap) + "px";
+            } catch (_) { }
+        };
+
+        phonePrefixAdjusters.push(adjustPadding);
+
+        // Ajusta após layout
+        requestAnimationFrame(adjustPadding);
+        setTimeout(adjustPadding, 60);
+
+        // Ajusta após fontes carregarem (evita medir largura com fallback)
+        try {
+            if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === "function") {
+                document.fonts.ready.then(() => {
+                    try { adjustPadding(); } catch (_) { }
+                });
+            }
         } catch (_) { }
 
-        let lastValue = normalizePhoneBRNational(inputEl.value || "");
-        if (lastValue.length > 11) lastValue = lastValue.slice(0, 11);
-        inputEl.value = lastValue;
+
+        // Recalcula ao focar/clicar (quando o modal passa a ficar visível)
+        try {
+            inputEl.addEventListener("focus", adjustPadding);
+            inputEl.addEventListener("click", adjustPadding);
+        } catch (_) { }
+
+
+        if (!phonePrefixResizeBound) {
+            phonePrefixResizeBound = true;
+
+            let rafId = 0;
+            window.addEventListener("resize", () => {
+                try {
+                    if (rafId) cancelAnimationFrame(rafId);
+                    rafId = requestAnimationFrame(() => {
+                        phonePrefixAdjusters.forEach((fn) => {
+                            try { fn(); } catch (_) { }
+                        });
+                    });
+                } catch (_) { }
+            });
+        }
+    }
+
+
+    function bindPhoneInputHardLimit(inputEl, validateFn) {
+        // Agora este binder aplica máscara BR para celular (DDD + 9 + 8 dígitos),
+        // mantendo o envio exatamente como antes (normalizePhoneBR55/normalizePhoneBRNational).
+        if (!inputEl) return;
+
+        // Mostra prefixo fixo "+55" no campo (visual)
+        ensurePhonePrefixUI(inputEl, "+55");
+
+        const formatBRMobile = (digits) => {
+            const d = String(digits || "").slice(0, 11);
+            if (!d) return "";
+            let out = "(" + d.slice(0, Math.min(2, d.length));
+            if (d.length >= 2) out += ")";
+            if (d.length > 2) out += " " + d.slice(2, 3);
+            if (d.length > 3) out += " " + d.slice(3, Math.min(7, d.length));
+            if (d.length > 7) out += "-" + d.slice(7, Math.min(11, d.length));
+            return out;
+        };
+
+        const countDigits = (str) => (String(str || "").match(/\d/g) || []).length;
+
+        const caretFromDigits = (formatted, digitsCount) => {
+            const target = Math.max(0, digitsCount | 0);
+            if (!formatted || target === 0) return 0;
+            let seen = 0;
+            for (let i = 0; i < formatted.length; i++) {
+                if (/\d/.test(formatted[i])) seen++;
+                if (seen >= target) return i + 1;
+            }
+            return formatted.length;
+        };
+
+        // Ajusta atributos para máscara (sem travar somente em números no HTML)
+        try {
+            inputEl.setAttribute("maxlength", "16"); // "(99) 9 9999-9999"
+            inputEl.setAttribute("inputmode", "tel");
+            inputEl.setAttribute("autocomplete", "tel");
+            inputEl.removeAttribute("pattern");
+            if (!inputEl.getAttribute("placeholder") || /51999999999/.test(inputEl.getAttribute("placeholder") || "")) {
+                inputEl.setAttribute("placeholder", "Ex.: (51) 9 9999-9999");
+            }
+        } catch (_) { }
+
+        let lastDigits = normalizePhoneBRNational(inputEl.value || "");
+        if (lastDigits.length > 11) lastDigits = lastDigits.slice(0, 11);
+        inputEl.value = formatBRMobile(lastDigits);
 
         const getSel = () => {
             const v = String(inputEl.value || "");
             const s = inputEl.selectionStart == null ? v.length : inputEl.selectionStart;
             const e = inputEl.selectionEnd == null ? v.length : inputEl.selectionEnd;
-            return { start: s, end: e, selected: Math.max(0, e - s) };
+            return { start: s, end: e, selectedText: v.slice(s, e) };
         };
 
+        // Bloqueia inserção que exceda 11 dígitos (contando apenas números)
         inputEl.addEventListener("beforeinput", (ev) => {
             const type = String(ev.inputType || "");
-
-            // Deleções e histórico (undo/redo) podem passar
             if (!type.startsWith("insert")) return;
-
-            // Paste é tratado no handler de paste
             if (type === "insertFromPaste") return;
 
-            const current = normalizePhoneBRNational(inputEl.value || "");
-            const { selected } = getSel();
-
+            const currentDigits = normalizePhoneBRNational(inputEl.value || "");
+            const { selectedText } = getSel();
+            const selectedDigits = countDigits(selectedText);
             const insertDigits = onlyDigits(ev.data || "").length;
-            const nextLen = current.length - selected + insertDigits;
 
-            // BLOQUEIO: se estourar 11 dígitos, impede o input (não trunca e não "sobrescreve")
+            const nextLen = currentDigits.length - selectedDigits + insertDigits;
             if (nextLen > 11) ev.preventDefault();
         });
 
         inputEl.addEventListener("paste", (ev) => {
             const text = (ev.clipboardData || window.clipboardData)?.getData("text") || "";
             const insert = normalizePhoneBRNational(text || "");
-            const current = normalizePhoneBRNational(inputEl.value || "");
-            const { selected } = getSel();
+            const currentDigits = normalizePhoneBRNational(inputEl.value || "");
+            const { selectedText } = getSel();
+            const selectedDigits = countDigits(selectedText);
 
-            const nextLen = current.length - selected + insert.length;
+            const nextLen = currentDigits.length - selectedDigits + insert.length;
             if (nextLen > 11) ev.preventDefault();
         });
 
         inputEl.addEventListener("input", () => {
-            const cleaned = normalizePhoneBRNational(inputEl.value || "");
+            const raw = String(inputEl.value || "");
+            const caret = inputEl.selectionStart == null ? raw.length : inputEl.selectionStart;
+            const digitsBefore = countDigits(raw.slice(0, caret));
 
-            // Se por algum motivo exceder (ex: autofill), volta para o último valor válido
-            if (cleaned.length > 11) {
-                inputEl.value = lastValue;
-            } else {
-                inputEl.value = cleaned;
-                lastValue = cleaned;
-            }
+            let digits = normalizePhoneBRNational(raw);
+            if (digits.length > 11) digits = digits.slice(0, 11);
+
+            lastDigits = digits;
+
+            const formatted = formatBRMobile(digits);
+            inputEl.value = formatted;
+
+            try {
+                const pos = caretFromDigits(formatted, Math.min(digitsBefore, digits.length));
+                inputEl.setSelectionRange(pos, pos);
+            } catch (_) { }
 
             if (typeof validateFn === "function") validateFn();
         });

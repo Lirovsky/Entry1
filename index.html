@@ -15,20 +15,23 @@
             <div class="page page--hero page--wide">
                 <div class="heroSplit heroSplit--center">
                     <div class="heroCopy">
+                        <div>
+                            <img src="logoo.svg" class="logo">
+                        </div>
                         <div class="heroKicker">
                             <span class="heroKicker__spark" aria-hidden="true">✦</span>
                             Diagnóstico Financeiro
                         </div>
 
                         <h1 class="heroTitle">
-                            <span class="heroTitle__muted">Sua clínica tem</span><br />
-                            <span class="heroTitle__strong">salas vazias?</span>
+                            <span class="heroTitle__muted">Quanto dinheiro sua clínica</span><br />
+                            <span class="heroTitle__strong">está deixando na mesa?</span>
                         </h1>
 
-                        <p class="heroDesc">Veja quanto isso custa no seu bolso.</p>
+                        <p class="heroDesc">Horários vagos, faltas e reagendamentos viram prejuízo.</p>
 
                         <p class="heroSub">
-                            Faça a simulação em 2 minutos e descubra seu prejuízo real.
+                            Responda 3 perguntas e veja uma estimativa em R$/semana e R$/ano.
                         </p>
 
                         <div class="heroCtas">
@@ -43,7 +46,7 @@
                                 <span aria-hidden="true">🛡️</span> Conformidade com a LGPD
                             </div>
                             <div class="heroMeta__item heroMeta__muted">
-                                Gratuito • Sem compromisso • Resultado imediato
+                                Gratuito • 2 minutos • Resultado imediato
                             </div>
                         </div>
                     </div>
@@ -78,16 +81,15 @@
                         <div class="modalHeader__spacer" aria-hidden="true"></div>
                     </div>
 
-
-
                     <form id="leadForm" novalidate>
                         <!-- 1 -->
                         <div class="leadStep is-active" data-lead-step="1">
-                            <div class="leadTitle">Definição de escala</div>
+                            <div class="leadTitle">Quantas cadeiras de atendimento sua clínica possui?</div>
 
                             <label class="field">
-                                <span class="field__label">Quantas cadeiras de atendimento a clínica possui?</span>
-                                <input class="input" id="chairsInput" inputmode="numeric" placeholder="Ex.: 3" />
+                                <input class="input" id="chairsInput" inputmode="numeric"
+                                    aria-label="Quantas cadeiras de atendimento a clínica possui?"
+                                    placeholder="Ex.: 3" />
                             </label>
 
                             <div class="divider"></div>
@@ -104,12 +106,12 @@
 
                         <!-- 2 -->
                         <div class="leadStep" data-lead-step="2">
-                            <div class="leadTitle">Valor de mercado</div>
+                            <div class="leadTitle">Em média, quanto sua clínica fatura por hora de atendimento?</div>
 
                             <label class="field">
-                                <span class="field__label">Em média, quanto sua clínica fatura por hora de
-                                    atendimento?</span>
-                                <input class="input" id="hourValueInput" inputmode="numeric" placeholder="Ex.: 250" />
+                                <input class="input" id="hourValueInput" inputmode="numeric"
+                                    aria-label="Em média, quanto sua clínica fatura por hora de atendimento?"
+                                    placeholder="Ex.: 250" />
                             </label>
 
                             <div class="divider"></div>
@@ -126,12 +128,13 @@
 
                         <!-- 3 -->
                         <div class="leadStep" data-lead-step="3">
-                            <div class="leadTitle">Diagnóstico da dor</div>
+                            <div class="leadTitle">Em uma semana típica, quantos horários ficam vagos ou viram faltas?
+                            </div>
 
                             <label class="field">
-                                <span class="field__label">Em uma semana típica, somando todas as salas profissionais,
-                                    quantos horários ficam vagos ou viram faltas?</span>
-                                <input class="input" id="holesInput" inputmode="numeric" placeholder="Ex.: 8" />
+                                <input class="input" id="holesInput" inputmode="numeric"
+                                    aria-label="Em uma semana típica, somando todas as salas profissionais, quantos horários ficam vagos ou viram faltas?"
+                                    placeholder="Ex.: 8" />
                             </label>
 
                             <div class="divider"></div>
@@ -174,36 +177,120 @@
                     </p>
 
                     <div class="result__value">
-                        <div class="result__money" id="resultAnnualLoss">R$ 0</div>
-                        <div class="result__per">por ano</div>
+                        <div class="result__money" id="resultAnnualLoss">R$ 0,00/ano</div>
+                        <div class="result__weekly" id="resultWeeklyLoss">R$ 0,00/semana</div>
                     </div>
 
-                    <div class="resultCard">
-                        <div class="resultCard__top">
-                            Isso significa que você está perdendo <strong id="resultWeeklyLoss">R$ 0</strong> toda
-                            semana.
+                    <!-- 2) COMO CHEGAMOS NESSE NÚMERO -->
+                    <div class="block block--soft" id="calculo" aria-label="Como chegamos nesse número">
+                        <div class="block__title">Como chegamos nesse número</div>
+
+                        <div class="calc">
+                            <div class="calc__row">
+                                <span class="calc__label">Horários vagos por semana</span>
+                                <strong class="calc__value" id="calcHoles">—</strong>
+                            </div>
+                            <div class="calc__row">
+                                <span class="calc__label">Faturamento médio por hora</span>
+                                <strong class="calc__value" id="calcHourValue">—</strong>
+                            </div>
+
+                            <div class="calc__divider" aria-hidden="true"></div>
+
+                            <div class="calc__row calc__row--emph">
+                                <span class="calc__label">Perda estimada por semana</span>
+                                <strong class="calc__value" id="calcWeeklyLoss">—</strong>
+                            </div>
+                            <div class="calc__row">
+                                <span class="calc__label">Perda estimada por ano</span>
+                                <strong class="calc__value" id="calcAnnualLoss">—</strong>
+                            </div>
                         </div>
 
-                        <div class="resultCard__grid">
-                            <div class="mini">
-                                <div class="mini__label">Com esse valor, você poderia comprar</div>
-                                <div class="mini__big" id="resultEquipCount">0 equipamentos</div>
-                                <div class="mini__sub">de R$ 15.000 cada</div>
-                            </div>
-
-                            <div class="mini">
-                                <div class="mini__label">Ou investir em tráfego pago</div>
-                                <div class="mini__big" id="resultMonthlyAd">R$ 0/mês</div>
-                                <div class="mini__sub">sem tirar do seu bolso</div>
-                            </div>
+                        <div class="block__note">
+                            Usamos <strong>48 semanas</strong> para considerar feriados, sazonalidade e semanas menos
+                            cheias. O objetivo não é “acertar o centavo”, e sim mostrar o tamanho do problema com
+                            clareza.
                         </div>
                     </div>
 
-                    <div class="block block--dark">
+                    <!-- 3) O QUE ISSO SIGNIFICA NA PRÁTICA -->
+                    <div class="block block--light" aria-label="O que isso significa na prática">
+                        <div class="block__title">O que esse valor significa na prática</div>
+                        <div class="block__text">
+                            Esse dinheiro já passou pela sua agenda — mas não virou atendimento. E, na maioria das
+                            clínicas, isso vem junto com dois efeitos invisíveis: <strong>retrabalho</strong> e
+                            <strong>pacientes desistindo</strong> por falta de rotina de confirmação e encaixe.
+                        </div>
+
+                        <ul class="bullets">
+                            <li>Confirmação fraca: o paciente “some” e a vaga morre.</li>
+                            <li>Sem lista de espera: encaixes não acontecem quando abre um horário.</li>
+                            <li>Sem processo de retorno: faltou hoje e ninguém reativa amanhã.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 4) PLANO DE 7 DIAS -->
+                    <div class="block block--light" id="plano" aria-label="Plano simples para recuperar ocupação">
+                        <div class="block__title">Plano simples para recuperar ocupação em 7 dias</div>
+
+                        <ol class="plan">
+                            <li><strong>Dia 1–2:</strong> padronizar status da agenda (confirmado, pendente, faltou,
+                                reagendar).</li>
+                            <li><strong>Dia 3:</strong> criar rotina de confirmação e lembrete (24h e 2h antes).</li>
+                            <li><strong>Dia 4:</strong> organizar lista de espera e regra de encaixe.</li>
+                            <li><strong>Dia 5:</strong> reativar faltas da semana com mensagem padrão.</li>
+                            <li><strong>Dia 6–7:</strong> revisar métricas: faltas, taxa de confirmação e ocupação.</li>
+                        </ol>
+
+                        <div class="block__note">
+                            Isso funciona mesmo com equipe pequena. O segredo é ter <strong>processo</strong> e uma
+                            <strong>ferramenta</strong> que sustente a consistência.
+                        </div>
+                    </div>
+
+                    <!-- 5) GANCHO + VÍDEO -->
+                    <p class="resultNote" id="video">
+                        No vídeo abaixo você vai ver como clínicas reduzem faltas e preenchem horários vagos com um
+                        processo simples (e automatizado).
+                    </p>
+
+                    <div class="resultVideo" aria-label="Vídeo explicativo">
+                        <div class="resultVideo__frame">
+                            <iframe src="https://www.youtube.com/embed/_0v2nd4bR6A" title="Vídeo explicativo"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+
+                    <!-- 6) ONDE O DINHEIRO SOME + SOLUÇÃO -->
+                    <div class="block block--dark" aria-label="Onde esse dinheiro está indo">
                         <div class="block__title">Onde esse dinheiro está indo?</div>
                         <div class="block__text">
-                            Ele está na mão da concorrência ou perdido na falta de processos de confirmação e vendas.
+                            Na prática, esse valor some por falta de processo: confirmação fraca, encaixes que não
+                            acontecem e equipe apagando incêndio. O resultado é agenda com buracos e decisões no
+                            improviso.
+                            <br /><br />
+                            Com o <strong>Clínica Experts</strong>, você centraliza agenda + atendimento e cria uma
+                            rotina clara de confirmação e encaixe, reduzindo faltas e aumentando a ocupação.
                         </div>
+                    </div>
+
+                    <!-- 7) CTA FORTE -->
+                    <div class="block block--cta" aria-label="Chamada para ver o sistema">
+                        <div class="cta__title">Quer ver o Clínica Experts funcionando?</div>
+                        <div class="cta__text">
+                            Em uma conversa rápida, um especialista te mostra o sistema em ação no seu cenário —
+                            confirmações, encaixes e lista de espera — para recuperar horários e aumentar a ocupação.
+                        </div>
+
+                        <ul class="cta__bullets">
+                            <li>Demonstração guiada do sistema</li>
+                            <li>Plano ideal para seu time e rotina</li>
+                            <li>Próximo passo claro</li>
+                        </ul>
                     </div>
 
                     <div class="resultCtas" aria-label="Ações">
@@ -212,11 +299,13 @@
                             Teste grátis
                         </a>
                         <button class="btn btn--purple btn--lg btn--block" id="ctaSpecialistBtn" type="button">
-                            Fale com um especialista
+                            Falar com um especialista
                         </button>
                     </div>
+
                 </div>
             </div>
+        </section>
         </section>
 
         <!-- THANK YOU (após envio no modal do especialista) -->

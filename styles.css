@@ -35,7 +35,6 @@
     font-display: swap;
 }
 
-
 * {
     box-sizing: border-box;
 }
@@ -137,7 +136,6 @@ body {
     color: rgba(29, 29, 29, .75);
 }
 
-
 /* Views */
 .view {
     display: none;
@@ -168,11 +166,10 @@ body {
 .page--result {
     align-items: center;
     padding-top: 42px;
-    /* mantém “respiro” como na hero */
+    padding-bottom: 42px;
     padding-left: 22px;
     padding-right: 22px;
 }
-
 
 /* Buttons */
 .btn {
@@ -337,7 +334,12 @@ body {
 
 .heroTitle__strong {
     color: var(--black);
-    font-weight: 850;
+    font-weight: 700;
+}
+
+.logo {
+    width: 240px;
+    margin-bottom: 20px;
 }
 
 .heroDesc {
@@ -362,7 +364,7 @@ body {
 }
 
 .heroMeta {
-    margin-top: 18px;
+    margin-top: 24px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -516,7 +518,7 @@ body {
 .card__tag {
     text-align: center;
     font-size: 12px;
-    font-weight: 850;
+    font-weight: 700;
     letter-spacing: .10em;
     margin-bottom: 10px;
     color: rgba(0, 195, 165, .95);
@@ -548,7 +550,7 @@ body {
     font-size: 14px;
     color: rgba(29, 29, 29, .88);
     line-height: 1.35;
-    font-weight: 650;
+    font-weight: 500;
 }
 
 .input {
@@ -561,7 +563,7 @@ body {
     padding: 0 16px;
     outline: none;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 500;
     color: rgba(29, 29, 29, .90);
 }
 
@@ -575,7 +577,7 @@ body {
 }
 
 
-/* Select (mesmo estilo do .input) */
+/* Select */
 .select {
     width: 100%;
     height: 52px;
@@ -586,7 +588,7 @@ body {
     padding: 0 16px;
     outline: none;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 500;
     color: rgba(29, 29, 29, .90);
 }
 
@@ -594,7 +596,6 @@ body {
     border-color: var(--field-border-focus);
     box-shadow: none;
 }
-
 
 
 /* ====== Custom Select (dropdown estilizado) ====== */
@@ -622,11 +623,10 @@ body {
     padding: 0 46px 0 16px;
     outline: none;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 500;
     color: rgba(29, 29, 29, .90);
     text-align: left;
     cursor: pointer;
-
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%239A9998' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 16px center;
@@ -634,7 +634,7 @@ body {
 
 .customSelect__button[data-has-value="0"] {
     color: rgba(154, 153, 152, .85);
-    font-weight: 600;
+    font-weight: 400;
 }
 
 .customSelect__button:focus {
@@ -671,7 +671,7 @@ body {
     text-align: left;
     cursor: pointer;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 500;
     color: rgba(29, 29, 29, .92);
 }
 
@@ -686,13 +686,11 @@ body {
     color: #fff;
 }
 
-/* esconde a opção placeholder no menu, mas mantém no select (validação) */
 .customSelect__option[data-placeholder="1"] {
     color: rgba(29, 29, 29, .55);
     font-weight: 650;
 }
 
-/* Select com chevron (como no print) */
 select.input,
 select.select {
     appearance: none;
@@ -718,7 +716,7 @@ select.select {
 }
 
 .money__prefix {
-    font-weight: 800;
+    font-weight: 600;
     color: rgba(29, 29, 29, .55);
 }
 
@@ -756,7 +754,7 @@ select.select {
     color: rgba(29, 29, 29, .62);
     line-height: 1.5;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .divider {
@@ -789,13 +787,6 @@ select.select {
     position: relative;
 }
 
-/*
-  IMPORTANTE:
-  O atributo HTML [hidden] usa display:none no user-agent stylesheet,
-  mas como este arquivo define `display: grid` em `.modalOverlay`,
-  o cascade do CSS do autor pode sobrescrever e deixar o modal visível.
-  Garante que qualquer elemento com [hidden] fique realmente escondido.
-*/
 [hidden] {
     display: none !important;
 }
@@ -809,7 +800,6 @@ select.select {
     padding: 22px;
 }
 
-/* redundância específica do modal */
 .modalOverlay[hidden] {
     display: none !important;
 }
@@ -822,11 +812,9 @@ select.select {
     box-shadow: 0 36px 90px rgba(0, 0, 0, .35);
 }
 
-
 .modalHeader {
     display: grid;
     grid-template-columns: 44px 1fr 44px;
-    /* logo | stepper | spacer */
     align-items: center;
     gap: 12px;
 }
@@ -908,7 +896,7 @@ select.select {
     letter-spacing: -0.02em;
 }
 
-/* Radios como checkbox quadrado (print) */
+/* Radios como checkbox quadrado */
 .radioRow {
     display: flex;
     gap: 24px;
@@ -961,8 +949,7 @@ select.select {
     transform: translate(-50%, -60%) rotate(45deg);
 }
 
-
-/* Phone prefix field (print) */
+/* Phone prefix field */
 .phone {
     display: flex;
     align-items: center;
@@ -989,6 +976,43 @@ select.select {
     border-radius: 0;
 }
 
+/* Phone prefix (+55) inside input */
+.phonePrefixWrap {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.phonePrefix {
+    position: absolute;
+    left: 16px;
+    top: 1px;
+    bottom: 1px;
+    display: flex;
+    align-items: center;
+    padding: 0 18px 0 0;
+    font-weight: 750;
+    color: rgba(29, 29, 29, .60);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* divisor interno */
+.phonePrefix::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: rgba(29, 29, 29, .10);
+}
+
+.phonePrefixWrap .input {
+    padding-left: 66px;
+}
+
 /* Result */
 
 .resultCtas {
@@ -996,6 +1020,7 @@ select.select {
     display: flex;
     gap: 14px;
     margin-top: 16px;
+    margin-bottom: 20px;
 }
 
 .resultCtas>* {
@@ -1005,6 +1030,11 @@ select.select {
 @media (max-width: 620px) {
     .resultCtas {
         flex-direction: column;
+    }
+
+    .resultCtas .btn--lg {
+        height: 64px;
+        padding: 20px 0;
     }
 }
 
@@ -1020,7 +1050,7 @@ select.select {
 .result__kicker {
     margin: 0;
     color: rgba(29, 29, 29, .55);
-    font-size: 13px;
+    font-size: 15px;
     text-align: center;
     font-weight: 650;
 }
@@ -1039,6 +1069,39 @@ select.select {
     text-align: center;
     font-weight: 650;
 }
+
+.result__weekly {
+    margin-top: 6px;
+    font-weight: 900;
+    font-size: clamp(26px, 3.2vw, 38px);
+    letter-spacing: -0.02em;
+    color: rgba(29, 29, 29, .70);
+    text-align: center;
+}
+
+.resultVideo {
+    width: min(680px, 100%);
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.resultVideo__frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 22px;
+    overflow: hidden;
+    background: rgba(29, 29, 29, .08);
+    border: 1px solid rgba(29, 29, 29, .10);
+    box-shadow: 0 18px 50px rgba(29, 29, 29, .10);
+}
+
+.resultVideo__frame iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
 
 .resultCard {
     width: min(680px, 100%);
@@ -1109,7 +1172,7 @@ select.select {
 }
 
 .block__text {
-    font-size: 12px;
+    font-size: 15px;
     line-height: 1.55;
     opacity: .95;
 }
@@ -1151,65 +1214,11 @@ select.select {
     }
 }
 
-/* ===== Reduz negritos gerais do formulário ===== */
 
-/* labels */
-.field__label {
-    font-weight: 500;
-    /* antes 650 */
-}
-
-/* texto dentro dos campos */
-.input,
-.select {
-    font-weight: 500;
-    /* antes 600 */
-}
-
-/* custom select */
-.customSelect__button {
-    font-weight: 500;
-    /* antes 600 */
-}
-
-.customSelect__option {
-    font-weight: 500;
-    /* antes 600 */
-}
-
-/* placeholder do custom select (mantém leve) */
-.customSelect__button[data-has-value="0"] {
-    font-weight: 400;
-    /* antes 600 */
-}
-
-/* (opcional) título e tag do card, para tirar “tudo em bold” */
-.card__title {
-    font-weight: 500;
-    /* se quiser ainda mais normal, use 500 */
-}
-
-.card__tag {
-    font-weight: 700;
-    /* antes 850 */
-}
-
-/* (opcional) prefixo do money */
-.money__prefix {
-    font-weight: 600;
-    /* antes 800 */
-}
-
-/* (opcional) textos auxiliares */
-.callout__content {
-    font-weight: 500;
-    /* antes 600 */
-}
 
 
 /* =========================================
    RESPONSIVE (Mobile-first refinements)
-   Cole no FINAL do styles.css
 ========================================= */
 
 /* Evita zoom bizarro em iOS quando font-size < 16 */
@@ -1232,7 +1241,6 @@ button {
     -webkit-overflow-scrolling: touch;
 }
 
-/* Ações sempre com bom espaçamento */
 .actions {
     gap: 12px;
 }
@@ -1256,6 +1264,11 @@ button {
 
 /* Mobile */
 @media (max-width: 560px) {
+
+    .resultCtas .btn--lg {
+        height: 124px;
+        /* ajuste aqui (60~68 costuma ficar bom) */
+    }
 
     /* área útil */
     .page--wide,
@@ -1306,7 +1319,7 @@ button {
     }
 
     .field {
-        margin-top: 18px;
+        margin-top: 24px;
         gap: 8px;
     }
 
@@ -1353,6 +1366,8 @@ button {
     .block {
         padding: 14px;
     }
+
+
 }
 
 /* Telas muito baixas (ex: iPhone SE landscape) */
@@ -1361,6 +1376,7 @@ button {
         max-height: calc(100vh - 24px);
     }
 }
+
 
 /* ====== AWAIT ====== */
 .page--await {
@@ -1412,7 +1428,6 @@ button {
     color: rgba(29, 29, 29, .62);
     line-height: 1.45;
     min-height: 2.2em;
-    /* evita “pular” quando troca a msg */
 }
 
 .awaitHint {
@@ -1440,7 +1455,6 @@ button {
 .formHeader {
     display: grid;
     grid-template-columns: 44px 1fr 44px;
-    /* logo | stepper | spacer */
     align-items: center;
     gap: 12px;
 }
@@ -1490,12 +1504,10 @@ button {
         height: 100%;
         border-radius: 999px;
         background: var(--accent, #00C2A8);
-        /* ou sua cor principal */
         width: 16.66%;
         transition: width .25s ease;
     }
 
-    /* Ajusta header para não “espremer” */
     .formHeader {
         grid-template-columns: 44px 1fr 44px;
         align-items: center;
@@ -1534,7 +1546,7 @@ button {
 }
 
 .modalCard .field {
-    margin-top: 18px;
+    margin-top: 24px;
     gap: 8px;
 }
 
@@ -1567,4 +1579,189 @@ button {
     font-weight: 600;
     color: rgba(29, 29, 29, .55);
     line-height: 1.55;
+}
+
+
+/* ===== conteúdo mais denso ===== */
+
+.resultNav {
+    width: min(680px, 100%);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 6px;
+}
+
+.resultNav__link {
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 750;
+    color: rgba(29, 29, 29, .72);
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .58);
+    border: 1px solid rgba(29, 29, 29, .10);
+    transition: transform .12s ease, background .12s ease;
+}
+
+.resultNav__link:hover {
+    background: rgba(255, 255, 255, .78);
+}
+
+.resultCard__foot {
+    margin-top: 14px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(29, 29, 29, .70);
+    font-weight: 600;
+    text-align: center;
+}
+
+.block--soft {
+    background: rgba(255, 255, 255, .72);
+    border: 1px solid rgba(29, 29, 29, .10);
+    box-shadow: 0 18px 50px rgba(29, 29, 29, .06);
+}
+
+.block--light {
+    background: rgba(255, 255, 255, .56);
+    border: 1px solid rgba(29, 29, 29, .10);
+}
+
+.block__note {
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(29, 29, 29, .66);
+    font-weight: 600;
+}
+
+.calc {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.calc__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 12px;
+    border-radius: 14px;
+    background: rgba(236, 235, 233, .40);
+    border: 1px solid rgba(29, 29, 29, .08);
+}
+
+.calc__row--emph {
+    background: rgba(175, 71, 255, .10);
+    border-color: rgba(175, 71, 255, .18);
+}
+
+.calc__label {
+    font-size: 13px;
+    font-weight: 650;
+    color: rgba(29, 29, 29, .72);
+}
+
+.calc__value {
+    font-size: 14px;
+    font-weight: 900;
+    color: rgba(29, 29, 29, .90);
+    white-space: nowrap;
+}
+
+.calc__divider {
+    height: 1px;
+    background: rgba(29, 29, 29, .10);
+    margin: 4px 4px;
+    border-radius: 999px;
+}
+
+.bullets {
+    margin: 12px 0 0;
+    padding-left: 18px;
+    color: rgba(29, 29, 29, .78);
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.bullets li {
+    margin: 6px 0;
+}
+
+.plan {
+    margin: 12px 0 0;
+    padding-left: 18px;
+    color: rgba(29, 29, 29, .78);
+    font-weight: 600;
+    line-height: 1.65;
+}
+
+.plan li {
+    margin: 8px 0;
+}
+
+.resultNote {
+    width: min(680px, 100%);
+    margin: 18px 0 0;
+    text-align: center;
+    font-weight: 650;
+    color: rgba(29, 29, 29, .62);
+    line-height: 1.5;
+}
+
+.block--cta {
+    background: rgba(175, 71, 255, .10);
+    border: 1px solid rgba(175, 71, 255, .20);
+    box-shadow: 0 18px 50px rgba(175, 71, 255, .10);
+}
+
+.cta__title {
+    font-weight: 950;
+    letter-spacing: -0.02em;
+    font-size: 18px;
+    color: rgba(29, 29, 29, .92);
+}
+
+.cta__text {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: rgba(29, 29, 29, .82);
+    font-weight: 650;
+}
+
+.cta__bullets {
+    margin: 12px 0 0;
+    padding-left: 18px;
+    color: rgba(29, 29, 29, .80);
+    font-weight: 650;
+    line-height: 1.6;
+}
+
+.cta__bullets li {
+    margin: 6px 0;
+}
+
+.resultFinePrint {
+    width: min(680px, 100%);
+    margin-top: 2px;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(29, 29, 29, .48);
+    font-weight: 650;
+}
+
+@media (max-width: 620px) {
+    .calc__row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .calc__value {
+        align-self: flex-end;
+    }
 }
