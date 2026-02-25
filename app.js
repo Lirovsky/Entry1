@@ -1635,4 +1635,70 @@
     validateLeadSteps();
     updateLeadPreview();
 
+
+
+
+    /* ====================================================================== */
+    /* YouTube Fullscreen (fallback p/ mobile e webviews) */
+    /* ====================================================================== */
+
+    const videoExpandBtn = document.getElementById("videoExpandBtn");
+    const videoOverlay = document.getElementById("videoOverlay");
+    const videoOverlayClose = document.getElementById("videoOverlayClose");
+    const resultYoutubeIframe = document.getElementById("resultYoutubeIframe");
+    const videoOverlayIframe = document.getElementById("videoOverlayIframe");
+
+    function openVideoOverlay() {
+        if (!videoOverlay || !videoOverlayIframe || !resultYoutubeIframe) return;
+
+        videoOverlay.hidden = false;
+        videoOverlay.setAttribute("aria-hidden", "false");
+
+        // trava scroll (sem quebrar o layout)
+        document.body.style.overflow = "hidden";
+
+        // carrega o mesmo vídeo no overlay
+        const src = resultYoutubeIframe.getAttribute("src") || "";
+        videoOverlayIframe.setAttribute("src", src);
+
+        // tenta fullscreen nativo (quando suportado)
+        try {
+            const el = videoOverlay;
+            const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+            if (req) req.call(el);
+        } catch (_) { }
+    }
+
+    function closeVideoOverlay() {
+        if (!videoOverlay || !videoOverlayIframe) return;
+
+        videoOverlay.hidden = true;
+        videoOverlay.setAttribute("aria-hidden", "true");
+
+        document.body.style.overflow = "";
+
+        // para o vídeo ao fechar
+        videoOverlayIframe.setAttribute("src", "");
+
+        // sai do fullscreen se estiver ativo
+        try {
+            const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+            if (exit) exit.call(document);
+        } catch (_) { }
+    }
+
+    if (videoExpandBtn) videoExpandBtn.addEventListener("click", openVideoOverlay);
+    if (videoOverlayClose) videoOverlayClose.addEventListener("click", closeVideoOverlay);
+
+    if (videoOverlay) {
+        videoOverlay.addEventListener("click", (e) => {
+            if (e.target === videoOverlay) closeVideoOverlay();
+        });
+    }
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        if (videoOverlay && !videoOverlay.hidden) closeVideoOverlay();
+    });
+
 })();
